@@ -8,7 +8,7 @@ val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
 
 //Background
-val Black850 = Color(0xFF1E1E1E)
+val BlackPurple = Color(0xFF242A32)
 val BlueGrayDark = Color(0xFF242A32)
 
 //Primary
