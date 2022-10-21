@@ -9,5 +9,7 @@ data class MovieEntity(
     val releaseDate: String,
     val aboutMovie: String,
     val rate: Double,
+    val cover: String,
+    val banner: String,
     val durationInMinutes: Int? = null,
 )

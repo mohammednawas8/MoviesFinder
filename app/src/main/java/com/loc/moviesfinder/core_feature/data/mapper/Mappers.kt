@@ -4,12 +4,13 @@ import com.loc.moviesfinder.core_feature.data.local.entities.CastEntity
 import com.loc.moviesfinder.core_feature.data.local.entities.MovieEntity
 import com.loc.moviesfinder.core_feature.data.local.entities.ReviewEntity
 import com.loc.moviesfinder.core_feature.data.remote.dao.Cast
-import com.loc.moviesfinder.core_feature.data.remote.dao.Movie
+import com.loc.moviesfinder.core_feature.data.remote.dao.MovieResult
 import com.loc.moviesfinder.core_feature.data.remote.dao.Reviewer
+import com.loc.moviesfinder.core_feature.domain.model.Movie
 
-fun Movie.toMovieEntity(movieDuration: Int?): MovieEntity {
-    return MovieEntity(
-        id, release_date, overview, vote_average, movieDuration
+fun MovieResult.toMovie(): Movie {
+    return Movie(
+        id, poster_path
     )
 }
 

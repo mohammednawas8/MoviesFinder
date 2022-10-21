@@ -20,5 +20,8 @@ val Orange = Color(0xFFFF8700)
 //Searchbar background/hint texts and icons
 val Gray600 = Color(0xFF67686D)
 
+//Surface
+val BlackGray= Color(0xFF3A3F47)
+
 //Highlights texts/borders
 val BlueLight = Color(0xFF0296E5)

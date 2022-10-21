@@ -1,6 +1,6 @@
 package com.loc.moviesfinder.core_feature.data.remote.dao
 
-data class Movie(
+data class MovieResult(
     val adult: Boolean,
     val backdrop_path: String,
     val genre_ids: List<Int>,

@@ -1,37 +1,70 @@
 package com.loc.moviesfinder.core_feature.data.repository
 
+import com.loc.moviesfinder.core_feature.data.mapper.toMovie
 import com.loc.moviesfinder.core_feature.data.remote.MoviesApi
 import com.loc.moviesfinder.core_feature.data.remote.dao.MoviesCollectionResponse
 import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
+import com.loc.moviesfinder.core_feature.data.util.Resource
+import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.lang.Exception
 
 class MoviesRepositoryImpl(
     private val moviesApi: MoviesApi,
 ) : MoviesRepository {
 
+    override suspend fun getTrendingMovies(page: Int): Response<MoviesCollectionResponse> {
+        return moviesApi.getTrendingMovies(page = page)
+    }
+
     override suspend fun getMoviesList(
         moviesGenre: MoviesGenre,
         page: Int,
-    ): Response<MoviesCollectionResponse> {
-        return withContext(Dispatchers.IO) {
-            if (moviesGenre == MoviesGenre.LATEST)
-                moviesApi.getLatestMovies(page = page)
+    ): Resource<List<Movie>> {
+        return try {
+            if (moviesGenre == MoviesGenre.LATEST) {
+                val response = moviesApi.getLatestMovies(page = page)
+                handleMoviesCollectionResponse(response)
+            } else if (moviesGenre == MoviesGenre.NOW_PLAYING) {
+                val response = moviesApi.getNowPlayingMovies(page = page)
+                handleMoviesCollectionResponse(response)
+            } else if (moviesGenre == MoviesGenre.TOP_RATED) {
+                val response = moviesApi.getTopRatedMovies(page = page)
+                handleMoviesCollectionResponse(response)
+            } else if (moviesGenre == MoviesGenre.UPCOMING) {
+                val response = moviesApi.getUpComingMovies(page = page)
+                handleMoviesCollectionResponse(response)
+            } else if (moviesGenre == MoviesGenre.POPULAR) {
+                val response = moviesApi.getPopularMovies(page = page)
+                handleMoviesCollectionResponse(response)
+            } else {
+                throw Exception("Select a valid MoviesGenre")
+            }
 
-            if (moviesGenre == MoviesGenre.NOW_PLAYING)
-                moviesApi.getNowPlayingMovies(page = page)
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
 
-            if (moviesGenre == MoviesGenre.POPULAR)
-                moviesApi.getPopularMovies(page = page)
+    private fun handleMoviesCollectionResponse(response: Response<MoviesCollectionResponse>): Resource<List<Movie>> {
+        return if (response.body() != null) {
+            val movies = response.body()!!.results.map { it.toMovie() }
+            Resource.Success(movies)
+        } else {
+            val errorDescription = getResponseError(response.code())
+            Resource.Error(Exception(errorDescription))
+        }
+    }
 
-            if (moviesGenre == MoviesGenre.UPCOMING)
-                moviesApi.getUpComingMovies(page = page)
-
-            if (moviesGenre == MoviesGenre.TOP_RATED)
-                moviesApi.getTopRatedMovies(page = page)
-            else moviesApi.getTrendingMovies(page = page)
+    private fun getResponseError(responseCode: Int): String {
+        val strResponseCode = responseCode.toString()
+        return when (strResponseCode.drop(0)) {
+            "4" -> "Please check your internet"
+            "5" -> "Server error"
+            else -> "Unknown error"
         }
     }
 }

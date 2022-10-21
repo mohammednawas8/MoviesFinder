@@ -9,13 +9,15 @@ import androidx.compose.runtime.Composable
 private val DarkColorPalette = darkColors(
     background = BlackPurple,
     primary = White200,
-    secondary = Orange
+    secondary = Orange,
+    surface = BlackGray
 )
 
 private val LightColorPalette = lightColors(
     background = BlackPurple,
     primary = White200,
-    secondary = Orange
+    secondary = Orange,
+    surface = BlackGray
 
     /* Other default colors to override
     background = Color.White,
