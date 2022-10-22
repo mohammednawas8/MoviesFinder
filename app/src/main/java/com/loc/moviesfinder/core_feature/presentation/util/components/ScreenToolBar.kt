@@ -27,7 +27,7 @@ fun ScreenToolBar(
     iconClick: (() -> Unit)? = null,
 ) {
     Box(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxSize(),
+        Row(modifier = Modifier.matchParentSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
 

@@ -12,7 +12,7 @@ import retrofit2.http.Query
 interface MoviesApi {
 
     @GET("movie/latest")
-    suspend fun getLatestMovies (
+    suspend fun getLatestMovies(
         @Query("api_key") apiKey: String = API_KEY,
         @Query("language") language: String = "en-US",
         @Query("page") page: Int,
@@ -51,5 +51,11 @@ interface MoviesApi {
         @Query("api_key") apiKey: String = API_KEY,
         @Query("language") language: String = "en-US",
         @Query("page") page: Int,
+    ): Response<MoviesCollectionResponse>
+
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("query") query: String,
     ): Response<MoviesCollectionResponse>
 }

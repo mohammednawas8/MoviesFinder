@@ -7,10 +7,7 @@ import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.data.util.Resource
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.lang.Exception
 
 class MoviesRepositoryImpl(
     private val moviesApi: MoviesApi,
@@ -65,6 +62,16 @@ class MoviesRepositoryImpl(
             "4" -> "Please check your internet"
             "5" -> "Server error"
             else -> "Unknown error"
+        }
+    }
+
+    override suspend fun searchMovies(searchQuery: String): Resource<List<Movie>> {
+        return try {
+            val response = moviesApi.searchMovies(query = searchQuery)
+            return handleMoviesCollectionResponse(response)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e)
         }
     }
 }

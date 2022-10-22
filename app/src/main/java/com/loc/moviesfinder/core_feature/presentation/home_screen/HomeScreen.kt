@@ -4,11 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -32,6 +28,7 @@ import com.loc.moviesfinder.core_feature.domain.model.Movie
 import androidx.paging.CombinedLoadStates
 import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.presentation.home_screen.components.*
+import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.gridItems
 import com.loc.moviesfinder.ui.theme.Gray600
 import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
@@ -75,12 +72,12 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SearchBar(
+            EditableSearchbar(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth()
-                    .height(42.dp)
-            ) {
+                    .height(42.dp),
+                editable = true) {
 
             }
 
@@ -107,7 +104,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceAround,
             lastItemReached = {
                 Log.d("test", "paging request")
-                    viewModel.loadNowPlayingMovies()
+                viewModel.loadNowPlayingMovies()
             }
         ) { movie ->
             MovieCard(movieItem = movie, modifier = Modifier
