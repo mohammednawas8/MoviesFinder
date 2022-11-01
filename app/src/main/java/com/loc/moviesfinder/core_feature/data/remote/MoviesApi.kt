@@ -1,7 +1,9 @@
 package com.loc.moviesfinder.core_feature.data.remote
 
 import com.loc.moviesfinder.BuildConfig.API_KEY
+import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MoviesCollectionResponse
+import com.loc.moviesfinder.core_feature.data.remote.dao.SearchResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -57,5 +59,13 @@ interface MoviesApi {
     suspend fun searchMovies(
         @Query("api_key") apiKey: String = API_KEY,
         @Query("query") query: String,
-    ): Response<MoviesCollectionResponse>
+        @Query("page") page: Int,
+    ): Response<SearchResponse>
+
+    @GET("movie/{movie_id}")
+    suspend fun getMovieDetails(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("language") language: String = "en-US",
+    ): Response<MovieDetailsResponse>
 }

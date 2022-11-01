@@ -8,4 +8,6 @@
     <string name="top_rated">Top Rated</string>
     <string name="popular">Popular</string>
     <string name="latest">Latest</string>
+    <string name="minutes">Minutes</string>
+    <string name="family">Family</string>
 </resources>
