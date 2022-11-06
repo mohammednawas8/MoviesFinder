@@ -100,7 +100,6 @@ class MoviesRepositoryImpl(
                 }
             }
         }
-        Log.d("test",searchedMovies.toString())
         var throwable: Throwable? = null
         parentJob.invokeOnCompletion { throwable = it }
         return throwable?.let {

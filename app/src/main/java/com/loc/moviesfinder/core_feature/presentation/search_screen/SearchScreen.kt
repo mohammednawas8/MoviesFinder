@@ -1,11 +1,15 @@
 package com.loc.moviesfinder.core_feature.presentation.search_screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -16,6 +20,8 @@ import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSe
 import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenToolBar
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.presentation.search_screen.components.SearchedItemCard
+import com.loc.moviesfinder.core_feature.presentation.util.components.SearchedShimmerCard
+import com.loc.moviesfinder.ui.theme.Gray600
 
 @Composable
 fun SearchScreen(
@@ -23,7 +29,9 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
     val state = viewModel.searchState.collectAsState()
-
+    var showSearchDialog by remember {
+        mutableStateOf(false)
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -35,12 +43,17 @@ fun SearchScreen(
             title = stringResource(id = R.string.search),
             icon = painterResource(id = R.drawable.ic_info_circle),
             navigateBackRequest = {
-
+                navController.navigateUp()
             },
             iconClick = {
-                navController.navigateUp()
+                showSearchDialog = true
             }
         )
+
+        if (showSearchDialog)
+            SearchDialog {
+                showSearchDialog = false
+            }
 
         Spacer(modifier = Modifier.height(36.dp))
 
@@ -59,14 +72,59 @@ fun SearchScreen(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             contentPadding = PaddingValues(bottom = 24.dp, start = 29.dp, end = 29.dp)) {
-            itemsIndexed(state.value.searchedMovies) { index, item ->
-                SearchedItemCard(movie = item) {
 
+            if (state.value.newSearchLoading)
+                items(20) {
+                    SearchedShimmerCard(modifier = Modifier.fillMaxSize())
+                }
+
+            itemsIndexed(state.value.searchedMovies) { index, item ->
+                if (index == state.value.searchedMovies.size - 1) {
+                    viewModel.loadNextMovies()
+                }
+                SearchedItemCard(movie = item) {
                 }
             }
+
+            if (state.value.pagingLoading) {
+                item {
+                    CircularLoading()
+                }
+            }
+
         }
-
-
     }
+}
 
+@Composable
+fun SearchDialog(
+    onDismissRequest: () -> Unit,
+) {
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = {}) {
+                Text(text = stringResource(id = R.string.ok))
+            }
+        },
+        title = {
+            Text(text = stringResource(id = R.string.search))
+        },
+        text = {
+            Text(text = stringResource(id = R.string.search_text))
+        }
+    )
+}
+
+@Composable
+private fun CircularLoading() {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(bottom = 32.dp), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            color = Gray600,
+            modifier = Modifier.size(32.dp)
+        )
+    }
 }

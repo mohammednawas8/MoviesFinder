@@ -2,10 +2,7 @@ package com.loc.moviesfinder.core_feature.presentation.home_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
@@ -58,7 +55,7 @@ fun MovieCard(
         )
 
         if (isImageLoadingState == ImageLoadingState.LOADING)
-            ShimmerCard(2000f)
+            ShimmerCard(2000f,modifier = Modifier.fillMaxSize())
 
         else if (isImageLoadingState == ImageLoadingState.ERROR)
             Spacer(Modifier

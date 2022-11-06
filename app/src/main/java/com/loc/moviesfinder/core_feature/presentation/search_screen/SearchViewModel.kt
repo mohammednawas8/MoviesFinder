@@ -30,7 +30,10 @@ class SearchViewModel @Inject constructor(
     private val searchPager = DefaultPaginator(
         initialKey = 1,
         onLoadingUpdate = {
-            _searchState.value = searchState.value.copy(isLoading = it)
+            if (shouldReset)
+                _searchState.value = searchState.value.copy(newSearchLoading = it, pagingLoading = false)
+            else
+                _searchState.value = searchState.value.copy(newSearchLoading = false, pagingLoading = it)
         },
         onRequest = {
             moviesRepository.searchMovies(searchState.value.searchQuery, it)
@@ -57,6 +60,7 @@ class SearchViewModel @Inject constructor(
         }
     )
 
+
     private var job: Job? = null
     fun searchMovies(searchQuery: String) {
         job?.cancel()
@@ -67,13 +71,19 @@ class SearchViewModel @Inject constructor(
             _searchState.value = searchState.value.copy(searchQuery = searchQuery)
             if (shouldReset) {
                 searchPager.reset()
+                _searchState.value = searchState.value.copy(searchedMovies = emptyList())
             }
             val trimmedQuery = searchQuery.trim()
             if (trimmedQuery.isNotEmpty()) {
                 searchPager.loadNextData()
             }
         }
-
     }
 
+    fun loadNextMovies() {
+        viewModelScope.launch {
+            shouldReset = false
+            searchPager.loadNextData()
+        }
+    }
 }

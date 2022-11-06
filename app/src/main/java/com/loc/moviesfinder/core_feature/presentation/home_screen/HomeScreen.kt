@@ -174,6 +174,16 @@ private fun MoviesLoadState(
         }
     }
 }
+@Composable
+private fun CircularLoading() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            color = Gray600,
+            modifier = Modifier.size(32.dp)
+        )
+    }
+}
+
 
 @Composable
 private fun Retry(
@@ -188,16 +198,6 @@ private fun Retry(
         ) {
             retryRequest()
         }
-    }
-}
-
-@Composable
-private fun CircularLoading() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(
-            color = Gray600,
-            modifier = Modifier.size(32.dp)
-        )
     }
 }
 

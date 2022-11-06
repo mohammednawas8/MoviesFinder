@@ -10,4 +10,6 @@
     <string name="latest">Latest</string>
     <string name="minutes">Minutes</string>
     <string name="family">Family</string>
+    <string name="ok">ok</string>
+    <string name="search_text">Type the name,year or genre of the movie.</string>
 </resources>
