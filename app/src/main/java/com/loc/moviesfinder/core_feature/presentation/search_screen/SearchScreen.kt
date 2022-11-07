@@ -4,16 +4,15 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
@@ -104,15 +103,18 @@ fun SearchDialog(
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            TextButton(onClick = {}) {
+            TextButton(onClick = { onDismissRequest() }) {
                 Text(text = stringResource(id = R.string.ok))
             }
         },
         title = {
-            Text(text = stringResource(id = R.string.search))
+            Text(text = stringResource(id = R.string.search),
+                style = MaterialTheme.typography.h5.copy(
+                    Color.White, fontSize = 16.sp))
         },
         text = {
-            Text(text = stringResource(id = R.string.search_text))
+            Text(text = stringResource(id = R.string.search_text),
+                style = MaterialTheme.typography.h6.copy(color = Gray600, fontSize = 14.sp))
         }
     )
 }
