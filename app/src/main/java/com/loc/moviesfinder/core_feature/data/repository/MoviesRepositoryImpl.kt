@@ -1,25 +1,30 @@
 package com.loc.moviesfinder.core_feature.data.repository
 
 import android.util.Log
+import com.loc.moviesfinder.core_feature.data.local.MoviesDao
 import com.loc.moviesfinder.core_feature.data.mapper.toMovie
 import com.loc.moviesfinder.core_feature.data.mapper.toMovieDetails
+import com.loc.moviesfinder.core_feature.data.mapper.toMoviesDetails
 import com.loc.moviesfinder.core_feature.data.remote.MoviesApi
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MoviesCollectionResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.SearchResult
-import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
-import com.loc.moviesfinder.core_feature.data.util.Resource
+import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
+import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.domain.model.SearchedMovie
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import retrofit2.Response
 
 private val TAG = "MoviesRepositoryImpl"
 
 class MoviesRepositoryImpl(
     private val moviesApi: MoviesApi,
+    private val moviesDao: MoviesDao,
 ) : MoviesRepository {
 
     override suspend fun getTrendingMovies(page: Int): Response<MoviesCollectionResponse> {
@@ -126,13 +131,27 @@ class MoviesRepositoryImpl(
         return body.results
     }
 
-    override suspend fun getMovieDetails(movieId: Int): MovieDetails? {
+    override suspend fun getMovieDetailsFromNetwork(movieId: Int): Resource<MovieDetails> {
         return try {
             val response = moviesApi.getMovieDetails(movieId)
-            response.body()?.toMovieDetails()
+            if (response.body() != null)
+                Resource.Success(response.body()!!.toMovieDetails())
+            else
+                Resource.Error(Exception(getResponseError(response.code())))
         } catch (e: Exception) {
             e.printStackTrace()
-            null
+            Resource.Error(e)
+        }
+    }
+
+    override suspend fun getMovieDetailsFromDatabase(movieId: Int): MovieDetails? {
+        val movieWithGenres = moviesDao.getMovieById(movieId) ?: return null
+        return movieWithGenres.toMoviesDetails()
+    }
+
+    override suspend fun getMoviesDetailsFromDatabase(): Flow<List<MovieDetails>> {
+        return moviesDao.getMovies().map {
+            it.map { it.toMoviesDetails() }
         }
     }
 }

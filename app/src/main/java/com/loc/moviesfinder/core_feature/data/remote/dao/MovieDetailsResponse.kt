@@ -3,7 +3,7 @@ package com.loc.moviesfinder.core_feature.data.remote.dao
 data class MovieDetailsResponse(
     val adult: Boolean,
     val backdrop_path: String,
-    val genres: List<Genre>,
+    val genreResults: List<Genre>?,
     val id: Int,
     val imdb_id: String?,
     val original_language: String,
@@ -22,4 +22,4 @@ data class MovieDetailsResponse(
     val vote_average: Double,
     val vote_count: Int,
 
-)
+    )

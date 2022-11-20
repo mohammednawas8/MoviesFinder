@@ -1,11 +1,8 @@
 package com.loc.moviesfinder.core_feature.data.remote.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.loc.moviesfinder.core_feature.data.mapper.toMovie
-import com.loc.moviesfinder.core_feature.data.remote.dao.MovieResult
-import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import retrofit2.HttpException

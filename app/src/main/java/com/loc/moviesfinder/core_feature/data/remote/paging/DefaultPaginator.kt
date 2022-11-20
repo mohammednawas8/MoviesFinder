@@ -1,7 +1,6 @@
 package com.loc.moviesfinder.core_feature.data.remote.paging
 
-import android.util.Log
-import com.loc.moviesfinder.core_feature.data.util.Resource
+import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.paging.Paginator
 
 class DefaultPaginator<Key, Item>(

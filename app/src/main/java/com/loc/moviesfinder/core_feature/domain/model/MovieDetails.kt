@@ -7,8 +7,7 @@ data class MovieDetails(
     val backdropPath: String?,
     val posterPath: String,
     val releaseYear: Int,
-    val durationInMinutes: Int,
+    val durationInMinutes: Int?,
     val genre: List<String>,
     val aboutMovie: String
-) {
-}
+)

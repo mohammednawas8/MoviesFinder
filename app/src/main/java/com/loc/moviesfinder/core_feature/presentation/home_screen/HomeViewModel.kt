@@ -8,8 +8,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.map
 import com.loc.moviesfinder.core_feature.data.remote.paging.DefaultPaginator
 import com.loc.moviesfinder.core_feature.data.remote.paging.TrendingMoviesPagingSource
-import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
-import com.loc.moviesfinder.core_feature.domain.model.Movie
+import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel

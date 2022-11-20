@@ -2,7 +2,7 @@ package com.loc.moviesfinder.core_feature.data.remote.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.loc.moviesfinder.core_feature.data.util.Resource
+import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.domain.model.SearchedMovie
 import java.lang.Exception
