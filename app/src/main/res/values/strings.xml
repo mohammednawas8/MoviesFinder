@@ -14,4 +14,6 @@
     <string name="search_text">Type the name,year or genre of the movie.</string>
     <string name="detail">Detail</string>
     <string name="movie_detail_not_found">Movie detail not found</string>
+    <string name="movie_backdrop">Movie Backdrop</string>
+    <string name="movie_rating">Movie rating</string>
 </resources>

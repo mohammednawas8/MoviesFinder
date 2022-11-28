@@ -1,12 +1,12 @@
 package com.loc.moviesfinder.core_feature.data.mapper
 
-import android.util.Log
-import com.loc.moviesfinder.core_feature.data.local.entities.MovieEntity
 import com.loc.moviesfinder.core_feature.data.local.entities.MovieWithGenres
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieResult
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.presentation.util.Constants
+import java.text.DecimalFormat
 
 fun MovieResult.toMovie(): Movie {
     return Movie(
@@ -20,10 +20,10 @@ fun MovieDetailsResponse.toMovieDetails(): MovieDetails {
     else
         release_date.split("-")[0].toInt()
 
-    val genres = genreResults?.map { it.name } ?: emptyList()
+    val genres = genres?.map { it.name } ?: emptyList()
     return MovieDetails(id,
         title,
-        vote_average.toFloat(),
+        averageVotingConvertor(vote_average),
         backdrop_path,
         poster_path ?: "",
         year,
@@ -37,7 +37,7 @@ fun MovieWithGenres.toMoviesDetails(): MovieDetails {
     val genres = genres.map { it.genre }
     return MovieDetails(movie.movieId,
         movie.title,
-        movie.rate.toFloat(),
+        movie.rate,
         movie.banner,
         movie.cover,
         movie.releaseYear,
@@ -46,3 +46,13 @@ fun MovieWithGenres.toMoviesDetails(): MovieDetails {
         movie.aboutMovie)
 }
 
+fun MovieDetails?.correctImagePath(): MovieDetails? {
+    return this?.copy(posterPath = Constants.IMAGES_BASE_PATH + this.posterPath,
+        backdropPath = Constants.IMAGES_BASE_PATH + this.backdropPath)
+}
+
+
+fun averageVotingConvertor(averageRating: Double): Double {
+    val df = DecimalFormat("#.#")
+    return df.format(averageRating).toDouble()
+}

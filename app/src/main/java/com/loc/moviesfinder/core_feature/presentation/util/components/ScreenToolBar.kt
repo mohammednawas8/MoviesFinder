@@ -9,10 +9,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.ui.theme.MontserratFont
@@ -23,6 +25,7 @@ fun ScreenToolBar(
     modifier: Modifier = Modifier,
     title: String,
     icon: Painter? = null,
+    iconWidth: Dp = 24.dp,
     navigateBackRequest: () -> Unit,
     iconClick: (() -> Unit)? = null,
 ) {
@@ -46,11 +49,12 @@ fun ScreenToolBar(
                 Spacer(modifier = Modifier.size(20.dp))
             } else {
                 IconButton(
-                    onClick = { iconClick?.invoke() }
-                ) {
+                    onClick = { iconClick?.invoke() },
+                    modifier = Modifier.width(iconWidth).fillMaxHeight(),
+                    ) {
                     Icon(painter = icon,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.fillMaxSize(),
                         tint = Color.White
                     )
                 }

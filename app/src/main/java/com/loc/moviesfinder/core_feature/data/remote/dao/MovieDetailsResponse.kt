@@ -3,7 +3,7 @@ package com.loc.moviesfinder.core_feature.data.remote.dao
 data class MovieDetailsResponse(
     val adult: Boolean,
     val backdrop_path: String,
-    val genreResults: List<Genre>?,
+    val genres: List<Genre>?,
     val id: Int,
     val imdb_id: String?,
     val original_language: String,

@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.loc.moviesfinder.R
+import com.loc.moviesfinder.core_feature.data.mapper.correctImagePath
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.domain.util.Resource
+import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,15 +31,14 @@ class DetailsViewModel @Inject constructor(
             val movieDetailsFromDatabase = moviesRepository.getMovieDetailsFromDatabase(movieId)
             if (movieDetailsFromDatabase != null) {
                 _movieDetails.value =
-                    movieDetails.value.copy(movieDetails = movieDetailsFromDatabase)
+                    movieDetails.value.copy(movieDetails = movieDetailsFromDatabase.correctImagePath())
             } else {
                 _movieDetails.value = movieDetails.value.copy(isLoading = true)
                 val movieDetailsFromNetwork = moviesRepository.getMovieDetailsFromNetwork(movieId)
                 when (movieDetailsFromNetwork) {
                     is Resource.Success -> {
                         _movieDetails.value = movieDetails.value.copy(isLoading = false,
-                            movieDetails = movieDetailsFromNetwork.data!!)
-
+                            movieDetails = movieDetailsFromNetwork.data!!.correctImagePath())
                     }
                     is Resource.Error -> {
                         _movieDetails.value = movieDetails.value.copy(isLoading = false,
