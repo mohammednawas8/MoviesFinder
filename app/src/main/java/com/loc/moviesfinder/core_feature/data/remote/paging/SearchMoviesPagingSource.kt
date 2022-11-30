@@ -28,10 +28,10 @@ class SearchMoviesPagingSource(
                     if (result.data != null) {
                         LoadResult.Page(result.data, key + 1, null)
                     } else {
-                        LoadResult.Error(Throwable(""))
+                        LoadResult.Error(Throwable("No data"))
                     }
                 }
-                else -> LoadResult.Error(Throwable(""))
+                else -> LoadResult.Error(result.exception?:Exception(""))
             }
         } catch (e: Exception) {
             e.printStackTrace()

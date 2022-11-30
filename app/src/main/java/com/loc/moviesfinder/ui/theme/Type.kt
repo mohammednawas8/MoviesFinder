@@ -37,7 +37,7 @@ val Typography = Typography(
     ),
     h5 = TextStyle(
         fontFamily = PoppinsFont,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         color = Gray600
     ),

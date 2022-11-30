@@ -1,20 +1,20 @@
 package com.loc.moviesfinder.core_feature.presentation.details_screen
 
-import android.content.res.Resources
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.loc.moviesfinder.R
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.loc.moviesfinder.core_feature.data.mapper.correctImagePath
-import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.data.remote.paging.ReviewsPagingSource
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.domain.util.Resource
-import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
@@ -24,9 +24,15 @@ class DetailsViewModel @Inject constructor(
     private val _movieDetails = MutableStateFlow(DetailsScreenState())
     val movieDetails: StateFlow<DetailsScreenState> = _movieDetails
 
+    var movieId by Delegates.notNull<Int>()
+
+    init {
+    }
+
     fun getMovieDetails(movieId: Int) { //Another way to get the id
         //1- Get the movie from database.
         //2- if the movie from the database is null then get it from the api.
+        this.movieId = movieId
         viewModelScope.launch {
             val movieDetailsFromDatabase = moviesRepository.getMovieDetailsFromDatabase(movieId)
             if (movieDetailsFromDatabase != null) {
@@ -48,5 +54,12 @@ class DetailsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    val reviewsPaginator = Pager(
+        config = PagingConfig(30),
+        initialKey = 1
+    ) {
+        ReviewsPagingSource(movieId, moviesRepository)
     }
 }

@@ -8,5 +8,4 @@ data class DetailsScreenState(
     val isSaved: Boolean = false,
     val error: String = "",
     val isLoading: Boolean = false
-
 )

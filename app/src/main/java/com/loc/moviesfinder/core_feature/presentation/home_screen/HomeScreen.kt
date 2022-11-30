@@ -29,6 +29,7 @@ import androidx.paging.CombinedLoadStates
 import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.presentation.home_screen.components.*
 import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
+import com.loc.moviesfinder.core_feature.presentation.util.components.MoviesTabLayout
 import com.loc.moviesfinder.core_feature.presentation.util.components.gridItems
 import com.loc.moviesfinder.ui.theme.Gray600
 import com.loc.moviesfinder.ui.theme.MoviesFinderTheme

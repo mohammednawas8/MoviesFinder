@@ -5,6 +5,7 @@ import com.loc.moviesfinder.core_feature.data.local.MoviesDao
 import com.loc.moviesfinder.core_feature.data.mapper.toMovie
 import com.loc.moviesfinder.core_feature.data.mapper.toMovieDetails
 import com.loc.moviesfinder.core_feature.data.mapper.toMoviesDetails
+import com.loc.moviesfinder.core_feature.data.mapper.toReview
 import com.loc.moviesfinder.core_feature.data.remote.MoviesApi
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MoviesCollectionResponse
@@ -13,6 +14,7 @@ import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.domain.model.Review
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.domain.model.SearchedMovie
 import kotlinx.coroutines.*
@@ -154,4 +156,19 @@ class MoviesRepositoryImpl(
             it.map { it.toMoviesDetails() }
         }
     }
+
+    override suspend fun getMovieReviews(movieId: Int, page: Int): Resource<List<Review>> {
+        return try {
+            val response = moviesApi.getMovieReviews(movieId = movieId, page = page)
+            if (response.body() != null) {
+                val reviews = response.body()!!.results.map { it.toReview() }
+                Resource.Success(reviews)
+            } else {
+                throw Exception(getResponseError(response.code()))
+            }
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
+
 }

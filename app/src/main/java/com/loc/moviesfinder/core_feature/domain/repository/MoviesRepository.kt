@@ -5,6 +5,7 @@ import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.domain.model.Review
 import com.loc.moviesfinder.core_feature.domain.model.SearchedMovie
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -22,4 +23,6 @@ interface MoviesRepository {
     suspend fun getMovieDetailsFromDatabase(movieId: Int): MovieDetails?
 
     suspend fun getMoviesDetailsFromDatabase(): Flow<List<MovieDetails>>
+
+    suspend fun getMovieReviews(movieId: Int, page: Int): Resource<List<Review>>
 }

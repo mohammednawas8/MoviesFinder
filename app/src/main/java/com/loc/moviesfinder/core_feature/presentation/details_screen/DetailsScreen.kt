@@ -1,31 +1,30 @@
 package com.loc.moviesfinder.core_feature.presentation.details_screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.VerticalLine
 import com.loc.moviesfinder.core_feature.presentation.home_screen.components.MovieCard
-import com.loc.moviesfinder.core_feature.presentation.util.components.MovieImageCard
-import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenToolBar
-import com.loc.moviesfinder.core_feature.presentation.util.components.TextIcon
+import com.loc.moviesfinder.core_feature.presentation.util.components.*
 import com.loc.moviesfinder.core_feature.presentation.util.toSingleLine
 import com.loc.moviesfinder.ui.theme.Black800
 import com.loc.moviesfinder.ui.theme.Gray500
@@ -39,6 +38,7 @@ fun DetailsScreen(
 ) {
 
     val state = viewModel.movieDetails.collectAsState().value
+
     LaunchedEffect(key1 = true) {
         viewModel.getMovieDetails(634649)
 //        TODO: call viewModel function to get the movie detail
@@ -61,9 +61,34 @@ fun DetailsScreen(
         if (state.movieDetails == null) {
 
         } else {
+            val movieDetailsTabs = rememberMovieDetailsTabs()
+
             BackdropPosterTitleSection(state.movieDetails)
             Spacer(modifier = Modifier.height(16.dp))
             MovieInformationSection(state.movieDetails)
+            Spacer(modifier = Modifier.height(24.dp))
+
+            var movieDetailsSection by remember {
+                mutableStateOf(movieDetailsTabs[0])
+            }
+            MovieDetailsTabLayout(tabs = movieDetailsTabs, onTabSelect = { tab ->
+                movieDetailsSection = tab
+            })
+            Spacer(modifier = Modifier.height(24.dp))
+            when (movieDetailsSection) {
+                is MovieDetailsTab.AboutMovie -> {
+                    Text(text = state.movieDetails.aboutMovie,
+                        style = MaterialTheme.typography.h5.copy(color = Color.White,
+                            fontSize = 12.sp), modifier = Modifier.padding(horizontal = 25.dp))
+
+                }
+                is MovieDetailsTab.Reviews -> {
+
+                }
+                is MovieDetailsTab.Cast -> {
+
+                }
+            }
         }
     }
 }
@@ -175,4 +200,13 @@ fun MovieRating(rating: Double, modifier: Modifier) {
             color = Orange
         )
     }
+}
+
+@Composable
+fun rememberMovieDetailsTabs(): List<MovieDetailsTab> {
+    return listOf(
+        MovieDetailsTab.AboutMovie(stringResource(id = R.string.about_movie)),
+        MovieDetailsTab.Reviews(stringResource(id = R.string.reviews)),
+        MovieDetailsTab.Cast(stringResource(id = R.string.cast)),
+    )
 }

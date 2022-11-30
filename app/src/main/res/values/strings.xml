@@ -16,4 +16,7 @@
     <string name="movie_detail_not_found">Movie detail not found</string>
     <string name="movie_backdrop">Movie Backdrop</string>
     <string name="movie_rating">Movie rating</string>
+    <string name="about_movie">About Movie</string>
+    <string name="reviews">Reviews</string>
+    <string name="cast">Cast</string>
 </resources>
