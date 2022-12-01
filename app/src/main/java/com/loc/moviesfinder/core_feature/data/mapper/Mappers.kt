@@ -10,6 +10,7 @@ import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.model.Review
 import com.loc.moviesfinder.core_feature.presentation.util.Constants
+import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
 import java.text.DecimalFormat
 
 fun MovieResult.toMovie(): Movie {
@@ -52,15 +53,19 @@ fun MovieWithGenres.toMoviesDetails(): MovieDetails {
 }
 
 fun MovieDetails?.correctImagePath(): MovieDetails? {
-    return this?.copy(posterPath = Constants.IMAGES_BASE_PATH + this.posterPath,
-        backdropPath = Constants.IMAGES_BASE_PATH + this.backdropPath)
+    return this?.copy(posterPath = IMAGES_BASE_PATH + this.posterPath,
+        backdropPath = IMAGES_BASE_PATH + this.backdropPath)
+}
+
+fun String?.correctImagePath(): String {
+    return IMAGES_BASE_PATH + this
 }
 
 fun ReviewResult.toReview(): Review {
     return Review(
         author,
         author_details.rating,
-        author_details.avatar_path,
+        author_details.avatar_path.correctImagePath(),
         content
     )
 }

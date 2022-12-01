@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.loc.moviesfinder.core_feature.data.mapper.correctImagePath
 import com.loc.moviesfinder.core_feature.data.remote.paging.ReviewsPagingSource
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
@@ -57,9 +58,9 @@ class DetailsViewModel @Inject constructor(
     }
 
     val reviewsPaginator = Pager(
-        config = PagingConfig(30),
+        config = PagingConfig(10),
         initialKey = 1
     ) {
         ReviewsPagingSource(movieId, moviesRepository)
-    }
+    }.flow
 }

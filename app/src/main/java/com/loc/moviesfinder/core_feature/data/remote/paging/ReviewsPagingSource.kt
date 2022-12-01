@@ -18,15 +18,17 @@ class ReviewsPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Review> {
-        val key = params.key ?: DEFAULT_REVIEWS_KEY
+        val page = params.key ?: DEFAULT_REVIEWS_KEY
 
-        val reviews = moviesRepository.getMovieReviews(movieId, key)
+        val reviews = moviesRepository.getMovieReviews(movieId, page)
         return when (reviews) {
             is Resource.Success -> {
-                if (reviews.data != null)
+                if (reviews.data != null) {
+                    val nextKey = if (reviews.data.isNullOrEmpty()) null else page + 1
                     LoadResult.Page(
-                        reviews.data, prevKey = key - 1, nextKey = key + 1
+                        reviews.data, prevKey = null, nextKey = nextKey
                     )
+                }
                 else
                     LoadResult.Error(Throwable("Unknown exception"))
 

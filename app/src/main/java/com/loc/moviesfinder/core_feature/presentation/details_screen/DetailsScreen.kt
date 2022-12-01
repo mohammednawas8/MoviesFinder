@@ -3,6 +3,7 @@ package com.loc.moviesfinder.core_feature.presentation.details_screen
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -20,8 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.domain.model.Review
+import com.loc.moviesfinder.core_feature.presentation.details_screen.components.ReviewCard
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.VerticalLine
 import com.loc.moviesfinder.core_feature.presentation.home_screen.components.MovieCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.*
@@ -38,9 +45,10 @@ fun DetailsScreen(
 ) {
 
     val state = viewModel.movieDetails.collectAsState().value
+    val reviews = viewModel.reviewsPaginator.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
-        viewModel.getMovieDetails(634649)
+        viewModel.getMovieDetails(1930)
 //        TODO: call viewModel function to get the movie detail
     }
 
@@ -77,17 +85,37 @@ fun DetailsScreen(
             Spacer(modifier = Modifier.height(24.dp))
             when (movieDetailsSection) {
                 is MovieDetailsTab.AboutMovie -> {
-                    Text(text = state.movieDetails.aboutMovie,
-                        style = MaterialTheme.typography.h5.copy(color = Color.White,
-                            fontSize = 12.sp), modifier = Modifier.padding(horizontal = 25.dp))
+                    AboutMovieSection(state.movieDetails)
 
                 }
                 is MovieDetailsTab.Reviews -> {
-
+                    ReviewsSection(reviews)
                 }
                 is MovieDetailsTab.Cast -> {
 
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AboutMovieSection(movieDetails: MovieDetails) {
+    Text(text = movieDetails.aboutMovie,
+        style = MaterialTheme.typography.h5.copy(color = Color.White,
+            fontSize = 12.sp), modifier = Modifier.padding(horizontal = 25.dp))
+}
+
+@Composable
+private fun ReviewsSection(reviews: LazyPagingItems<Review>) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 10.dp)) {
+        itemsIndexed(reviews) { _, review ->
+            review?.let {
+                ReviewCard(review = it,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 34.dp))
             }
         }
     }
