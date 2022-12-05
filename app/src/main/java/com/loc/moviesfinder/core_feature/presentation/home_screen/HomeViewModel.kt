@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import androidx.paging.map
 import com.loc.moviesfinder.core_feature.data.remote.paging.DefaultPaginator
 import com.loc.moviesfinder.core_feature.data.remote.paging.TrendingMoviesPagingSource
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private val TAG = "HomeViewModel"
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     moviesRepository: MoviesRepository,
@@ -35,7 +37,7 @@ class HomeViewModel @Inject constructor(
         pagingData.map { movie ->
             movie.copy(coverPath = IMAGES_BASE_PATH + movie.coverPath)
         }
-    }
+    }.cachedIn(viewModelScope)
 
     private val nowPlayingPaginator = DefaultPaginator(
         initialKey = 1,
@@ -58,7 +60,7 @@ class HomeViewModel @Inject constructor(
             _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
                 error = it?.message ?: ""
             )
-            Log.e(TAG,"PlayingNowMovies ${it?.message}")
+            Log.e(TAG, "PlayingNowMovies ${it?.message}")
         }
     )
 

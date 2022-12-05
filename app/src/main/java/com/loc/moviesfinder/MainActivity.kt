@@ -13,8 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.loc.moviesfinder.core_feature.presentation.details_screen.DetailsScreen
-import com.loc.moviesfinder.core_feature.presentation.home_screen.HomeScreen
-import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchScreen
 import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,6 +30,7 @@ class MainActivity : ComponentActivity() {
                     Box {
                         DetailsScreen(movieId = 20555, navController = rememberNavController())
 //                        HomeScreen(navController = rememberNavController())
+//                        SearchScreen(navController = rememberNavController())
                     }
                 }
             }

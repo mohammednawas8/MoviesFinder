@@ -4,8 +4,10 @@ import android.util.Log
 import com.loc.moviesfinder.core_feature.data.local.entities.MovieWithGenres
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieResult
+import com.loc.moviesfinder.core_feature.data.remote.dao.cast.CastResult
 import com.loc.moviesfinder.core_feature.data.remote.dao.reviews.ReviewResult
 import com.loc.moviesfinder.core_feature.data.remote.dao.reviews.ReviewsResponse
+import com.loc.moviesfinder.core_feature.domain.model.Cast
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.model.Review
@@ -74,4 +76,8 @@ fun ReviewResult.toReview(): Review {
 fun averageVotingConvertor(averageRating: Double): Double {
     val df = DecimalFormat("#.#")
     return df.format(averageRating).toDouble()
+}
+
+fun CastResult.toCast(): Cast{
+    return Cast(profile_path.correctImagePath(), name)
 }

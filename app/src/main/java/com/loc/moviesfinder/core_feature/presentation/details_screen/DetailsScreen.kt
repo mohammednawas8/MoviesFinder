@@ -1,11 +1,15 @@
 package com.loc.moviesfinder.core_feature.presentation.details_screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -23,16 +27,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import androidx.paging.compose.itemsIndexed
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.model.Review
+import com.loc.moviesfinder.core_feature.presentation.details_screen.components.CastCard
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.ReviewCard
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.VerticalLine
-import com.loc.moviesfinder.core_feature.presentation.home_screen.components.MovieCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.*
-import com.loc.moviesfinder.core_feature.presentation.util.toSingleLine
 import com.loc.moviesfinder.ui.theme.Black800
 import com.loc.moviesfinder.ui.theme.Gray500
 import com.loc.moviesfinder.ui.theme.Orange
@@ -47,8 +49,11 @@ fun DetailsScreen(
     val state = viewModel.movieDetails.collectAsState().value
     val reviews = viewModel.reviewsPaginator.collectAsLazyPagingItems()
 
+    val reviewScrollState = rememberLazyListState()
+
     LaunchedEffect(key1 = true) {
         viewModel.getMovieDetails(1930)
+        viewModel.getMovieCast(1930)
 //        TODO: call viewModel function to get the movie detail
     }
 
@@ -70,7 +75,6 @@ fun DetailsScreen(
 
         } else {
             val movieDetailsTabs = rememberMovieDetailsTabs()
-
             BackdropPosterTitleSection(state.movieDetails)
             Spacer(modifier = Modifier.height(16.dp))
             MovieInformationSection(state.movieDetails)
@@ -81,20 +85,31 @@ fun DetailsScreen(
             }
             MovieDetailsTabLayout(tabs = movieDetailsTabs, onTabSelect = { tab ->
                 movieDetailsSection = tab
+                viewModel.reviewScrollPosition = reviewScrollState.firstVisibleItemScrollOffset
             })
             Spacer(modifier = Modifier.height(24.dp))
             when (movieDetailsSection) {
                 is MovieDetailsTab.AboutMovie -> {
                     AboutMovieSection(state.movieDetails)
-
                 }
                 is MovieDetailsTab.Reviews -> {
                     ReviewsSection(reviews)
                 }
                 is MovieDetailsTab.Cast -> {
-
+                    CastSection(state)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CastSection(state: DetailsScreenState) {
+    LazyVerticalGrid(columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(bottom = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        itemsIndexed(state.castList) { _, item ->
+            CastCard(cast = item)
         }
     }
 }
@@ -107,9 +122,14 @@ private fun AboutMovieSection(movieDetails: MovieDetails) {
 }
 
 @Composable
-private fun ReviewsSection(reviews: LazyPagingItems<Review>) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 10.dp)) {
+private fun ReviewsSection(
+    reviews: LazyPagingItems<Review>,
+) {
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 10.dp),
+    ) {
         itemsIndexed(reviews) { _, review ->
             review?.let {
                 ReviewCard(review = it,
@@ -117,6 +137,7 @@ private fun ReviewsSection(reviews: LazyPagingItems<Review>) {
                         .fillMaxWidth()
                         .padding(horizontal = 34.dp))
             }
+
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.loc.moviesfinder.core_feature.presentation.details_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -25,10 +24,11 @@ class DetailsViewModel @Inject constructor(
     private val _movieDetails = MutableStateFlow(DetailsScreenState())
     val movieDetails: StateFlow<DetailsScreenState> = _movieDetails
 
+
+    var reviewScrollPosition: Int = 0
+
     var movieId by Delegates.notNull<Int>()
 
-    init {
-    }
 
     fun getMovieDetails(movieId: Int) { //Another way to get the id
         //1- Get the movie from database.
@@ -40,19 +40,41 @@ class DetailsViewModel @Inject constructor(
                 _movieDetails.value =
                     movieDetails.value.copy(movieDetails = movieDetailsFromDatabase.correctImagePath())
             } else {
-                _movieDetails.value = movieDetails.value.copy(isLoading = true)
+                _movieDetails.value = movieDetails.value.copy(detailsLoading = true)
                 val movieDetailsFromNetwork = moviesRepository.getMovieDetailsFromNetwork(movieId)
                 when (movieDetailsFromNetwork) {
                     is Resource.Success -> {
-                        _movieDetails.value = movieDetails.value.copy(isLoading = false,
-                            movieDetails = movieDetailsFromNetwork.data!!.correctImagePath())
+                        _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
+                            movieDetails = movieDetailsFromNetwork.data!!.correctImagePath(),
+                            error = null)
                     }
                     is Resource.Error -> {
-                        _movieDetails.value = movieDetails.value.copy(isLoading = false,
+                        _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
                             error = movieDetailsFromNetwork.exception.toString())
                     }
                     else -> Unit
                 }
+            }
+        }
+    }
+
+
+    fun getMovieCast(movieId: Int) {
+        viewModelScope.launch {
+            _movieDetails.value = movieDetails.value.copy(castLoading = true)
+            val result = moviesRepository.getMovieCast(movieId)
+            when (result) {
+                is Resource.Success -> {
+                    _movieDetails.value =
+                        movieDetails.value.copy(castLoading = false,
+                            error = null,
+                            castList = result.data!!)
+                }
+                is Resource.Error -> {
+                    _movieDetails.value = movieDetails.value.copy(castLoading = false,
+                        error = result.exception.toString())
+                }
+                else -> Unit
             }
         }
     }
@@ -62,5 +84,6 @@ class DetailsViewModel @Inject constructor(
         initialKey = 1
     ) {
         ReviewsPagingSource(movieId, moviesRepository)
-    }.flow
+    }.flow.cachedIn(viewModelScope)
+//CachedIn used to save the scroll position
 }
