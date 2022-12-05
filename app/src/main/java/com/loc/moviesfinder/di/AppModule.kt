@@ -33,7 +33,8 @@ object AppModule {
     @Singleton
     fun provideMoviesDatabase(
         application: Application,
-    ): MoviesDatabase = Room.databaseBuilder(application, MoviesDatabase::class.java, "movie_db").build()
+    ): MoviesDatabase = Room.databaseBuilder(application, MoviesDatabase::class.java, "movie_db")
+        .fallbackToDestructiveMigration().build()
 
     @Provides
     fun provideMoviesApi(

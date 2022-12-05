@@ -3,9 +3,7 @@ package com.loc.moviesfinder.core_feature.presentation.details_screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -52,8 +50,7 @@ fun DetailsScreen(
     val reviewScrollState = rememberLazyListState()
 
     LaunchedEffect(key1 = true) {
-        viewModel.getMovieDetails(1930)
-        viewModel.getMovieCast(1930)
+        viewModel.getMovie(557)
 //        TODO: call viewModel function to get the movie detail
     }
 
@@ -67,6 +64,9 @@ fun DetailsScreen(
                 .fillMaxWidth()
                 .height(36.dp)
                 .padding(horizontal = 22.dp),
+            iconClick = {
+                viewModel.insertDeleteMovie()
+            }
         )
 
         Spacer(modifier = Modifier.height(20.dp))

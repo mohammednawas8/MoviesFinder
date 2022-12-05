@@ -1,18 +1,17 @@
 package com.loc.moviesfinder.core_feature.data.mapper
 
-import android.util.Log
-import com.loc.moviesfinder.core_feature.data.local.entities.MovieWithGenres
+import com.loc.moviesfinder.core_feature.data.local.entities.MovieEntity
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieResult
 import com.loc.moviesfinder.core_feature.data.remote.dao.cast.CastResult
 import com.loc.moviesfinder.core_feature.data.remote.dao.reviews.ReviewResult
-import com.loc.moviesfinder.core_feature.data.remote.dao.reviews.ReviewsResponse
 import com.loc.moviesfinder.core_feature.domain.model.Cast
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.model.Review
-import com.loc.moviesfinder.core_feature.presentation.util.Constants
 import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
+import com.loc.moviesfinder.core_feature.presentation.util.toSingleLine
+import com.loc.moviesfinder.core_feature.presentation.util.toStringListOfGenres
 import java.text.DecimalFormat
 
 fun MovieResult.toMovie(): Movie {
@@ -40,18 +39,28 @@ fun MovieDetailsResponse.toMovieDetails(): MovieDetails {
     )
 }
 
-fun MovieWithGenres.toMoviesDetails(): MovieDetails {
-    val movie = movieEntity
-    val genres = genres.map { it.genre }
-    return MovieDetails(movie.movieId,
-        movie.title,
-        movie.rate,
-        movie.banner,
-        movie.cover,
-        movie.releaseYear,
-        movie.durationInMinutes,
-        genres,
-        movie.aboutMovie)
+fun MovieDetails.toMovieEntity(): MovieEntity {
+    return MovieEntity(id,
+        title,
+        genre.toSingleLine(),
+        releaseYear,
+        aboutMovie,
+        averageVoting,
+        posterPath,
+        backdropPath ?: "",
+        durationInMinutes)
+}
+
+fun MovieEntity.toMovieDetails(): MovieDetails {
+    return MovieDetails(movieId,
+        title,
+        rate,
+        banner,
+        cover,
+        releaseYear,
+        durationInMinutes,
+        genre.toStringListOfGenres(),
+        aboutMovie)
 }
 
 fun MovieDetails?.correctImagePath(): MovieDetails? {
@@ -78,6 +87,6 @@ fun averageVotingConvertor(averageRating: Double): Double {
     return df.format(averageRating).toDouble()
 }
 
-fun CastResult.toCast(): Cast{
+fun CastResult.toCast(): Cast {
     return Cast(profile_path.correctImagePath(), name)
 }

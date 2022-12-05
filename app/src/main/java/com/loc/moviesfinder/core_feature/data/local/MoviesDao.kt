@@ -10,20 +10,12 @@ import kotlinx.coroutines.flow.Flow
 interface MoviesDao {
 
     @Insert
-    fun insertMovie(movieEntity: MovieEntity)
+    suspend fun insertMovie(movieEntity: MovieEntity)
 
-    @Insert
-    fun insertGenre(genresEntity: List<GenreEntity>)
+    @Query("DELETE FROM MovieEntity WHERE movieId=:movieId")
+    suspend fun deleteMovieById(movieId: Int)
 
-    @Insert
-    fun insertReviews(reviewsEntity: List<ReviewEntity>)
+    @Query("SELECT * FROM MovieEntity WHERE movieId=:movieId")
+    suspend fun getMovieById(movieId: Int): MovieEntity?
 
-    @Insert
-    fun insertCasts(castsEntity: List<CastEntity>)
-
-    @Query("SELECT * FROM MovieEntity")
-    fun getMovies(): Flow<List<MovieWithGenres>>
-
-    @Query("SELECT * FROM MovieEntity WHERE movieId=:id")
-    suspend fun getMovieById(id: Int): MovieWithGenres?
 }

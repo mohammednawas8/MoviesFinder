@@ -140,17 +140,6 @@ class MoviesRepositoryImpl(
         }
     }
 
-    override suspend fun getMovieDetailsFromDatabase(movieId: Int): MovieDetails? {
-        val movieWithGenres = moviesDao.getMovieById(movieId) ?: return null
-        return movieWithGenres.toMoviesDetails()
-    }
-
-    override suspend fun getMoviesDetailsFromDatabase(): Flow<List<MovieDetails>> {
-        return moviesDao.getMovies().map {
-            it.map { it.toMoviesDetails() }
-        }
-    }
-
     override suspend fun getMovieReviews(movieId: Int, page: Int): Resource<List<Review>> {
         return try {
             val response = moviesApi.getMovieReviews(movieId = movieId, page = page)
@@ -177,5 +166,18 @@ class MoviesRepositoryImpl(
         } catch (e: Exception) {
             Resource.Error(e)
         }
+    }
+
+    override suspend fun getMovieFromDatabase(id: Int): MovieDetails? {
+        val movieEntity = moviesDao.getMovieById(id)?.toMovieDetails()
+        return movieEntity
+    }
+
+    override suspend fun inertMovie(movie: MovieDetails) {
+        moviesDao.insertMovie(movie.toMovieEntity())
+    }
+
+    override suspend fun deleteMovie(id: Int) {
+        moviesDao.deleteMovieById(id)
     }
 }

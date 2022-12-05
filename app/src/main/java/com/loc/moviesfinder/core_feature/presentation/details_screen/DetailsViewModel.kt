@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
@@ -24,42 +23,51 @@ class DetailsViewModel @Inject constructor(
     private val _movieDetails = MutableStateFlow(DetailsScreenState())
     val movieDetails: StateFlow<DetailsScreenState> = _movieDetails
 
-
     var reviewScrollPosition: Int = 0
 
-    var movieId by Delegates.notNull<Int>()
+    var movieId: Int? = null
 
 
-    fun getMovieDetails(movieId: Int) { //Another way to get the id
-        //1- Get the movie from database.
-        //2- if the movie from the database is null then get it from the api.
+    fun getMovie(movieId: Int) {
+        this.movieId = movieId
+        getMovieDetails(movieId)
+        getMovieCast(movieId)
+        checkIfMovieIsSaved(movieId)
+    }
+
+    private fun checkIfMovieIsSaved(movieId: Int) {
+        viewModelScope.launch {
+            val movie = moviesRepository.getMovieFromDatabase(movieId)
+            if (movie == null)
+                _movieDetails.value = movieDetails.value.copy(isSaved = false)
+            else
+                _movieDetails.value = movieDetails.value.copy(isSaved = true)
+
+        }
+    }
+
+    private fun getMovieDetails(movieId: Int) {
         this.movieId = movieId
         viewModelScope.launch {
-            val movieDetailsFromDatabase = moviesRepository.getMovieDetailsFromDatabase(movieId)
-            if (movieDetailsFromDatabase != null) {
-                _movieDetails.value =
-                    movieDetails.value.copy(movieDetails = movieDetailsFromDatabase.correctImagePath())
-            } else {
-                _movieDetails.value = movieDetails.value.copy(detailsLoading = true)
-                val movieDetailsFromNetwork = moviesRepository.getMovieDetailsFromNetwork(movieId)
-                when (movieDetailsFromNetwork) {
-                    is Resource.Success -> {
-                        _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
-                            movieDetails = movieDetailsFromNetwork.data!!.correctImagePath(),
-                            error = null)
-                    }
-                    is Resource.Error -> {
-                        _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
-                            error = movieDetailsFromNetwork.exception.toString())
-                    }
-                    else -> Unit
+            _movieDetails.value = movieDetails.value.copy(detailsLoading = true)
+            val movieDetailsFromNetwork = moviesRepository.getMovieDetailsFromNetwork(movieId)
+            when (movieDetailsFromNetwork) {
+                is Resource.Success -> {
+                    _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
+                        movieDetails = movieDetailsFromNetwork.data!!.correctImagePath(),
+                        error = null)
                 }
+                is Resource.Error -> {
+                    _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
+                        error = movieDetailsFromNetwork.exception.toString())
+                }
+                else -> Unit
             }
         }
     }
 
 
-    fun getMovieCast(movieId: Int) {
+    private fun getMovieCast(movieId: Int) {
         viewModelScope.launch {
             _movieDetails.value = movieDetails.value.copy(castLoading = true)
             val result = moviesRepository.getMovieCast(movieId)
@@ -75,6 +83,23 @@ class DetailsViewModel @Inject constructor(
                         error = result.exception.toString())
                 }
                 else -> Unit
+            }
+        }
+    }
+
+    fun insertDeleteMovie() {
+        viewModelScope.launch {
+            movieId?.let { movieId ->
+                val movieFromDatabase = moviesRepository.getMovieFromDatabase(movieId)
+                if (movieFromDatabase == null) { //Insert
+                    movieDetails.value.movieDetails?.let { movie ->
+                        moviesRepository.inertMovie(movie)
+                        _movieDetails.value = movieDetails.value.copy(isSaved = true)
+                    }
+                } else { //Delete
+                    moviesRepository.deleteMovie(movieId)
+                    _movieDetails.value = movieDetails.value.copy(isSaved = false)
+                }
             }
         }
     }

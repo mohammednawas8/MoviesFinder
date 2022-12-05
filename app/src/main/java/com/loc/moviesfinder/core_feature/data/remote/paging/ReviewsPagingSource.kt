@@ -9,7 +9,7 @@ import com.loc.moviesfinder.core_feature.domain.util.Resource
 private const val DEFAULT_REVIEWS_KEY = 1
 
 class ReviewsPagingSource(
-    private val movieId: Int,
+    private val movieId: Int?,
     private val moviesRepository: MoviesRepository,
 ) : PagingSource<Int, Review>() {
 
@@ -19,6 +19,9 @@ class ReviewsPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Review> {
         val page = params.key ?: DEFAULT_REVIEWS_KEY
+
+        if (movieId == null)
+            return LoadResult.Invalid()
 
         val reviews = moviesRepository.getMovieReviews(movieId, page)
         return when (reviews) {
