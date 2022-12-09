@@ -19,4 +19,6 @@
     <string name="about_movie">About Movie</string>
     <string name="reviews">Reviews</string>
     <string name="cast">Cast</string>
+    <string name="options">Options</string>
+    <string name="save">Save</string>
 </resources>

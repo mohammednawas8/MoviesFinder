@@ -94,4 +94,8 @@ dependencies {
     //Hilt with compose
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
+    //Compose Ui System Controller
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
+
+
 }
