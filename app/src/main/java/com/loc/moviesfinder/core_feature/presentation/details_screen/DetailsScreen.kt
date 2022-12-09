@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -27,6 +29,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.loc.moviesfinder.R
+import com.loc.moviesfinder.core_feature.domain.model.Cast
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.domain.model.Review
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.CastCard
@@ -70,6 +73,11 @@ fun DetailsScreen(
             }
         )
 
+        if (state.detailsLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth().height(2.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(20.dp))
 
         if (state.movieDetails == null) {
@@ -91,16 +99,17 @@ fun DetailsScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             //Save the scroll state in viewModel
-                viewModel.castScrollPosition = castScrollState.firstVisibleItemIndex
+            viewModel.castScrollPosition = castScrollState.firstVisibleItemIndex
+            viewModel.reviewScrollPosition = reviewScrollState.firstVisibleItemIndex
             when (movieDetailsSection) {
                 is MovieDetailsTab.AboutMovie -> {
                     AboutMovieSection(state.movieDetails)
                 }
                 is MovieDetailsTab.Reviews -> {
-                    ReviewsSection(reviews)
+                    ReviewsSection(reviews, reviewScrollState, viewModel.reviewScrollPosition)
                 }
                 is MovieDetailsTab.Cast -> {
-                    CastSection(state, viewModel, castScrollState)
+                    CastSection(state.castList, castScrollState, viewModel.castScrollPosition)
                 }
             }
         }
@@ -109,17 +118,17 @@ fun DetailsScreen(
 
 @Composable
 private fun CastSection(
-    state: DetailsScreenState,
-    viewModel: DetailsViewModel,
+    castList: List<Cast>,
     scrollState: LazyGridState,
+    scrollIndex: Int,
 ) {
     LaunchedEffect(key1 = true) {
-        scrollState.scrollToItem(index = viewModel.castScrollPosition)
+        scrollState.scrollToItem(index = scrollIndex)
     }
     LazyVerticalGrid(columns = GridCells.Fixed(2), state = scrollState,
         contentPadding = PaddingValues(bottom = 10.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        itemsIndexed(state.castList) { _, item ->
+        itemsIndexed(castList) { _, item ->
             CastCard(cast = item)
         }
     }
@@ -135,11 +144,16 @@ private fun AboutMovieSection(movieDetails: MovieDetails) {
 @Composable
 private fun ReviewsSection(
     reviews: LazyPagingItems<Review>,
+    scrollState: LazyListState,
+    scrollIndex: Int,
 ) {
-
+    LaunchedEffect(key1 = true) {
+        scrollState.scrollToItem(scrollIndex)
+    }
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(bottom = 10.dp),
+        state = scrollState
     ) {
         itemsIndexed(reviews) { _, review ->
             review?.let {

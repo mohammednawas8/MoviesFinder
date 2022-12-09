@@ -23,10 +23,10 @@ class DetailsViewModel @Inject constructor(
     private val _movieDetails = MutableStateFlow(DetailsScreenState())
     val movieDetails: StateFlow<DetailsScreenState> = _movieDetails
 
-    var reviewScrollPosition: Int = 0
 
     var movieId: Int? = null
 
+    var reviewScrollPosition = 0
     var castScrollPosition = 0
 
     fun getMovie(movieId: Int) {
