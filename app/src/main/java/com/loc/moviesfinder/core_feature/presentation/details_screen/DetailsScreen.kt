@@ -1,12 +1,12 @@
 package com.loc.moviesfinder.core_feature.presentation.details_screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,6 +36,7 @@ import com.loc.moviesfinder.core_feature.presentation.util.components.*
 import com.loc.moviesfinder.ui.theme.Black800
 import com.loc.moviesfinder.ui.theme.Gray500
 import com.loc.moviesfinder.ui.theme.Orange
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailsScreen(
@@ -43,11 +44,11 @@ fun DetailsScreen(
     viewModel: DetailsViewModel = hiltViewModel(),
     navController: NavController,
 ) {
-
-    val state = viewModel.movieDetails.collectAsState().value
     val reviews = viewModel.reviewsPaginator.collectAsLazyPagingItems()
+    val state = viewModel.movieDetails.collectAsState().value
 
     val reviewScrollState = rememberLazyListState()
+    val castScrollState = rememberLazyGridState()
 
     LaunchedEffect(key1 = true) {
         viewModel.getMovie(557)
@@ -88,6 +89,9 @@ fun DetailsScreen(
                 viewModel.reviewScrollPosition = reviewScrollState.firstVisibleItemScrollOffset
             })
             Spacer(modifier = Modifier.height(24.dp))
+
+            //Save the scroll state in viewModel
+                viewModel.castScrollPosition = castScrollState.firstVisibleItemIndex
             when (movieDetailsSection) {
                 is MovieDetailsTab.AboutMovie -> {
                     AboutMovieSection(state.movieDetails)
@@ -96,7 +100,7 @@ fun DetailsScreen(
                     ReviewsSection(reviews)
                 }
                 is MovieDetailsTab.Cast -> {
-                    CastSection(state)
+                    CastSection(state, viewModel, castScrollState)
                 }
             }
         }
@@ -104,8 +108,15 @@ fun DetailsScreen(
 }
 
 @Composable
-private fun CastSection(state: DetailsScreenState) {
-    LazyVerticalGrid(columns = GridCells.Fixed(2),
+private fun CastSection(
+    state: DetailsScreenState,
+    viewModel: DetailsViewModel,
+    scrollState: LazyGridState,
+) {
+    LaunchedEffect(key1 = true) {
+        scrollState.scrollToItem(index = viewModel.castScrollPosition)
+    }
+    LazyVerticalGrid(columns = GridCells.Fixed(2), state = scrollState,
         contentPadding = PaddingValues(bottom = 10.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)) {
         itemsIndexed(state.castList) { _, item ->

@@ -27,6 +27,7 @@ class DetailsViewModel @Inject constructor(
 
     var movieId: Int? = null
 
+    var castScrollPosition = 0
 
     fun getMovie(movieId: Int) {
         this.movieId = movieId
