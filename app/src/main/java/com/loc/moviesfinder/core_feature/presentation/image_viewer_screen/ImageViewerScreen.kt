@@ -1,9 +1,7 @@
 package com.loc.moviesfinder.core_feature.presentation.image_viewer_screen
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -11,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.TopEnd
@@ -22,15 +19,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.loc.moviesfinder.R
+import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
+
 
 @Composable
 fun ImageViewerScreen(
     imagePath: String,
     type: ImageType,
+    viewModel: ImageDownloaderViewModel = hiltViewModel(),
 ) {
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(Color.Black)
@@ -43,6 +44,8 @@ fun ImageViewerScreen(
         mutableStateOf(false)
     }
 
+    val state = viewModel.downloadState.collectAsState().value
+
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -51,12 +54,30 @@ fun ImageViewerScreen(
             dotsVisibility = !dotsVisibility
         })
     ) {
+
+        if (state.success) {
+            Toast.makeText(LocalContext.current,
+                stringResource(id = R.string.image_saved),
+                Toast.LENGTH_LONG).show()
+        }
+
+        if (state.loading) {
+            DownloadProgressSection()
+        }
+
+        if (state.error != null) {
+            Toast.makeText(LocalContext.current,
+                stringResource(id = R.string.image_unsaved),
+                Toast.LENGTH_LONG).show()
+        }
+
         Column(
             modifier = Modifier
                 .size(50.dp)
                 .align(TopEnd)
                 .padding(end = 24.dp, top = 24.dp),
         ) {
+
 
             AnimatedVisibility(visible = dotsVisibility,
                 enter = fadeIn(),
@@ -80,7 +101,7 @@ fun ImageViewerScreen(
 
                     DropdownMenuItem(onClick = {
                         expandDropDownMenu = false
-                        /*TODO: Call saveImage from viewModel*/
+                        viewModel.downloadImage(imagePath)
                     }, Modifier.background(Color.White)) {
                         Text(text = stringResource(id = R.string.save))
                     }
@@ -91,7 +112,7 @@ fun ImageViewerScreen(
         val imageRequest =
             ImageRequest.Builder(LocalContext.current).placeholder(R.drawable.loading)
                 .error(R.drawable.error_icon).crossfade(true).data(
-                    "https://i.ibb.co/KXr4g4t/2022-0701-01410200.jpg"
+                    IMAGES_BASE_PATH + imagePath
                 ).build()
         AsyncImage(
             modifier = Modifier
@@ -101,11 +122,16 @@ fun ImageViewerScreen(
             model = imageRequest,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            onSuccess = {
-
-            },
         )
     }
+}
+
+
+@Composable
+private fun DownloadProgressSection() {
+    LinearProgressIndicator(modifier = Modifier
+        .fillMaxWidth()
+        .height(2.dp))
 }
 
 enum class ImageType {

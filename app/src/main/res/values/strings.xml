@@ -21,4 +21,6 @@
     <string name="cast">Cast</string>
     <string name="options">Options</string>
     <string name="save">Save</string>
+    <string name="image_saved">Image saved successfully</string>
+    <string name="image_unsaved">Image was unsaved</string>
 </resources>

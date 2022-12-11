@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     Box {
-                        ImageViewerScreen("",ImageType.BACKDROP)
+                        ImageViewerScreen("6RAAxI4oPnDMzXpXWgkkzSgnIAJ.jpg",ImageType.POSTER)
 //                        DetailsScreen(movieId = 20555, navController = rememberNavController())
 //                        HomeScreen(navController = rememberNavController())
 //                        SearchScreen(navController = rememberNavController())
