@@ -10,9 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.loc.moviesfinder.core_feature.data.worker.DownloadImageWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -27,18 +25,20 @@ class ImageDownloaderViewModel @Inject constructor(
     private val _downloadState = MutableStateFlow(ImageViewerState())
     val downloadState = _downloadState.asStateFlow()
 
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
 
     fun downloadImage(imagePath: String) {
         val downloadRequest =
             OneTimeWorkRequestBuilder<DownloadImageWorker>().setInputData(workDataOf("imagePath" to imagePath))
                 .build()
         WorkManager.getInstance(getApplication())
-            .beginUniqueWork("imageSaved", ExistingWorkPolicy.KEEP, downloadRequest).enqueue()
+            .beginUniqueWork("imageSaved", ExistingWorkPolicy.APPEND_OR_REPLACE, downloadRequest).enqueue()
         val workerUUID = downloadRequest.id
         observeChanges(workerUUID)
     }
 
-    fun observeChanges(workerUUID: UUID) {
+    private fun observeChanges(workerUUID: UUID) {
         viewModelScope.launch {
             WorkManager.getInstance(getApplication()).getWorkInfoByIdLiveData(workerUUID).asFlow()
                 .collectLatest {
@@ -46,16 +46,21 @@ class ImageDownloaderViewModel @Inject constructor(
                         WorkInfo.State.SUCCEEDED.name -> {
                             _downloadState.value =
                                 downloadState.value.copy(loading = false,
-                                    error = null,
                                     success = true)
+                            viewModelScope.launch {
+                                _message.emit("Image saved")
+                            }
                         }
                         WorkInfo.State.RUNNING.name -> {
                             _downloadState.value =
-                                downloadState.value.copy(loading = true, error = null)
+                                downloadState.value.copy(loading = true)
+
                         }
                         WorkInfo.State.FAILED.name -> {
-                            _downloadState.value = downloadState.value.copy(loading = true,
-                                error = it.outputData.getString("error"))
+                            _downloadState.value = downloadState.value.copy(loading = true)
+                            viewModelScope.launch {
+                                _message.emit("Couldn't save the image")
+                            }
                         }
                         else -> Unit
                     }
