@@ -1,7 +1,6 @@
 package com.loc.moviesfinder.core_feature.presentation.image_viewer_screen
 
 import android.Manifest
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -29,6 +28,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.presentation.util.Constants.IMAGES_BASE_PATH
+import com.loc.moviesfinder.ui.theme.White200
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -90,7 +90,7 @@ fun ImageViewerScreen(
             RationalDialog(title = stringResource(id = R.string.rational_title),
                 text = stringResource(
                     id = R.string.rational_text),
-                showPermissionRational = showPermissionRational) {
+                ) {
                 showPermissionRational = false
             }
         }
@@ -98,7 +98,7 @@ fun ImageViewerScreen(
             RationalDialog(title = stringResource(id = R.string.permission_denied_title),
                 text = stringResource(
                     id = R.string.permission_denied_text),
-                showPermissionRational = showPermissionRational) {
+                ) {
                 showPermissionRational = false
             }
         }
@@ -185,24 +185,23 @@ private fun
         RationalDialog(
     title: String,
     text: String,
-    showPermissionRational: Boolean,
     onDismissRequest: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         buttons = {
             TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(id = R.string.ok))
+                Text(text = stringResource(id = R.string.ok), color = Color.White)
             }
         },
         modifier = Modifier
-            .fillMaxWidth(0.7f)
+            .fillMaxWidth()
             .wrapContentHeight(),
         title = {
-            Text(text = title)
+            Text(text = title, color = White200)
         },
         text = {
-            Text(text = text)
+            Text(text = text,color = White200)
         }
     )
 }
