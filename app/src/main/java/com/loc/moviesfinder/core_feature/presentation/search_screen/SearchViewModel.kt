@@ -42,11 +42,7 @@ class SearchViewModel @Inject constructor(
             it + 1
         },
         onSuccess = { key, items ->
-            val searchedMovies = items.map {
-                val movieDetails = it.movieDetails
-                SearchedMovie(it.id,
-                    movieDetails.copy(posterPath = IMAGES_BASE_PATH + movieDetails.posterPath))
-            }
+            val searchedMovies = items.map { it.copy(posterPath = IMAGES_BASE_PATH + it.posterPath) }
             if (shouldReset)
                 _searchState.value =
                     searchState.value.copy(searchedMovies = searchedMovies)

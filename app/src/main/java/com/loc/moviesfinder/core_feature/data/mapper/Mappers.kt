@@ -51,6 +51,7 @@ fun MovieDetails.toMovieEntity(): MovieEntity {
         durationInMinutes)
 }
 
+
 fun MovieEntity.toMovieDetails(): MovieDetails {
     return MovieDetails(movieId,
         title,

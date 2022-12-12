@@ -13,7 +13,7 @@ interface MoviesRepository {
 
     suspend fun getMoviesList(moviesGenre: MoviesGenre, page: Int): Resource<List<Movie>>
 
-    suspend fun searchMovies(searchQuery: String, page: Int): Resource<List<SearchedMovie>>
+    suspend fun searchMovies(searchQuery: String, page: Int): Resource<List<MovieDetails>>
 
     suspend fun getMovieDetailsFromNetwork(movieId: Int): Resource<MovieDetails>
 
@@ -26,4 +26,6 @@ interface MoviesRepository {
     suspend fun inertMovie(movie: MovieDetails)
 
     suspend fun deleteMovie(id: Int)
+
+    fun getSavedMovies(): Flow<List<MovieDetails>>
 }

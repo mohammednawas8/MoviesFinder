@@ -27,4 +27,5 @@
     <string name="rational_text">To save images we need to be able to write files into the external storage</string>
     <string name="permission_denied_title">Permission denied</string>
     <string name="permission_denied_text">Permission is denied you have to enable it from the app settings</string>
+    <string name="watch_list">Watch list</string>
 </resources>

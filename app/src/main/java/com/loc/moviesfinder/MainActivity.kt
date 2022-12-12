@@ -15,6 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import com.loc.moviesfinder.core_feature.presentation.details_screen.DetailsScreen
 import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageType
 import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageViewerScreen
+import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchScreen
+import com.loc.moviesfinder.core_feature.presentation.watch_list_screen.WatchListScreen
 import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,10 +32,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     Box {
-                        ImageViewerScreen("6RAAxI4oPnDMzXpXWgkkzSgnIAJ.jpg",ImageType.POSTER)
+//                        ImageViewerScreen("6RAAxI4oPnDMzXpXWgkkzSgnIAJ.jpg",ImageType.POSTER)
 //                        DetailsScreen(movieId = 20555, navController = rememberNavController())
 //                        HomeScreen(navController = rememberNavController())
 //                        SearchScreen(navController = rememberNavController())
+                        WatchListScreen(navController = rememberNavController())
                     }
                 }
             }

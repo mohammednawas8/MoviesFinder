@@ -1,6 +1,5 @@
 package com.loc.moviesfinder.core_feature.presentation.search_screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -18,8 +17,8 @@ import androidx.navigation.NavController
 import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenToolBar
 import com.loc.moviesfinder.R
-import com.loc.moviesfinder.core_feature.presentation.search_screen.components.SearchedItemCard
-import com.loc.moviesfinder.core_feature.presentation.util.components.SearchedShimmerCard
+import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsCard
+import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsShimmerCard
 import com.loc.moviesfinder.ui.theme.Gray600
 
 @Composable
@@ -74,14 +73,14 @@ fun SearchScreen(
 
             if (state.value.newSearchLoading)
                 items(20) {
-                    SearchedShimmerCard(modifier = Modifier.fillMaxSize())
+                    MovieDetailsShimmerCard(modifier = Modifier.fillMaxSize())
                 }
 
             itemsIndexed(state.value.searchedMovies) { index, item ->
                 if (index == state.value.searchedMovies.size - 1) {
                     viewModel.loadNextMovies()
                 }
-                SearchedItemCard(movie = item) {
+                MovieDetailsCard(movie = item) {
                 }
             }
 

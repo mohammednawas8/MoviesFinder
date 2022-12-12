@@ -48,7 +48,7 @@ fun ShimmerCard(
 }
 
 @Composable
-fun SearchedShimmerCard(
+fun MovieDetailsShimmerCard(
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier

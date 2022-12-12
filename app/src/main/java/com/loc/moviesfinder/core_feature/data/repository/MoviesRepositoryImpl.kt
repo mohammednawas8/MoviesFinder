@@ -78,11 +78,11 @@ class MoviesRepositoryImpl(
     override suspend fun searchMovies(
         searchQuery: String,
         page: Int,
-    ): Resource<List<SearchedMovie>> {
+    ): Resource<List<MovieDetails>> {
         val handler = CoroutineExceptionHandler { _, throwable ->
             Log.e(TAG, "Exception in searchMovies $throwable")
         }
-        val searchedMovies = mutableListOf<SearchedMovie>()
+        val searchedMovies = mutableListOf<MovieDetails>()
         var parentJob: Job
         withContext(Dispatchers.IO) {
             parentJob = launch(handler) {
@@ -94,7 +94,7 @@ class MoviesRepositoryImpl(
                         moviesIds.forEach {
                             launch {
                                 val movieDetails = getMovieDetails(it).toMovieDetails()
-                                searchedMovies.add(SearchedMovie(it.id, movieDetails))
+                                searchedMovies.add(movieDetails)
                             }
                         }
                     }.await()
@@ -181,4 +181,9 @@ class MoviesRepositoryImpl(
         moviesDao.deleteMovieById(id)
     }
 
+    override fun getSavedMovies(): Flow<List<MovieDetails>> {
+        return moviesDao.getMovies().map {
+            it.map { it.toMovieDetails() }
+        }
+    }
 }
