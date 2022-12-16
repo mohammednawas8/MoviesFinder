@@ -5,7 +5,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,6 +15,7 @@ import androidx.navigation.NavController
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsShimmerCard
+import com.loc.moviesfinder.core_feature.presentation.util.components.NoResultBox
 import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenToolBar
 
 @Composable
@@ -26,7 +29,10 @@ fun WatchListScreen(
     Box(modifier = Modifier.fillMaxSize()) {
 
         if (state.empty){
-
+            NoResultBox(image = painterResource(id = R.drawable.empty_box), title = stringResource(
+                id = R.string.no_movie_title) , subTitle = stringResource(id = R.string.no_movie_description),
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
 
         Column(modifier = Modifier.fillMaxSize()) {

@@ -60,7 +60,6 @@ fun SearchScreen(
                 .padding(horizontal = 29.dp)
                 .fillMaxWidth()
                 .height(42.dp),
-            editable = true
         ) {
             viewModel.searchMovies(it)
         }

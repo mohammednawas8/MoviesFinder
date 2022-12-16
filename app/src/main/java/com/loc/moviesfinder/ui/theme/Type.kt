@@ -46,6 +46,12 @@ val Typography = Typography(
         fontSize = 12.sp,
         fontWeight = FontWeight.Medium,
         color = Color.White
+    ),
+    h3 = TextStyle(
+        fontFamily = MontserratFont,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Color.White
     )
 
     /* Other default text styles to override

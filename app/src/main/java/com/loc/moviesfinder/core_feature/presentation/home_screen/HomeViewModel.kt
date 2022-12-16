@@ -29,6 +29,7 @@ class HomeViewModel @Inject constructor(
     private var _tabLayoutMoviesState = MutableStateFlow(TabLayoutSectionState())
     val tabLayoutMoviesState: StateFlow<TabLayoutSectionState> = _tabLayoutMoviesState
 
+
     val trendingMovies = Pager(
         config = PagingConfig(10)
     ) {

@@ -28,8 +28,10 @@ import com.loc.moviesfinder.core_feature.domain.model.Movie
 import androidx.paging.CombinedLoadStates
 import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.presentation.home_screen.components.*
+import com.loc.moviesfinder.core_feature.presentation.navigation.Navigation
 import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.MoviesTabLayout
+import com.loc.moviesfinder.core_feature.presentation.util.components.UnEditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.gridItems
 import com.loc.moviesfinder.ui.theme.Gray600
 import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
@@ -63,6 +65,7 @@ fun HomeScreen(
     val moviesCategories = rememberMoviesCategories()
     val lazyState = rememberLazyListState()
 
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -75,14 +78,13 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            EditableSearchbar(
+            UnEditableSearchbar(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth()
                     .height(42.dp),
-                editable = true) {
-
-            }
+                onClick = {
+                })
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -177,6 +179,7 @@ private fun MoviesLoadState(
         }
     }
 }
+
 @Composable
 private fun CircularLoading() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -242,6 +245,6 @@ fun HeaderTextPreview() {
 @Composable
 fun HomeScreenPreview() {
     MoviesFinderTheme {
-        HomeScreen(navController = rememberNavController())
+        HomeScreen(navController = rememberNavController(), hiltViewModel())
     }
 }

@@ -28,4 +28,7 @@
     <string name="permission_denied_title">Permission denied</string>
     <string name="permission_denied_text">Permission is denied you have to enable it from the app settings</string>
     <string name="watch_list">Watch list</string>
+    <string name="no_movie_title">There is no movie yet!</string>
+    <string name="no_movie_description">"Find your movie by Type title, categories, years, etc "</string>
+    <string name="home">Home</string>
 </resources>

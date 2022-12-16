@@ -14,8 +14,8 @@ class TrendingMoviesPagingSource(
     private val moviesRepository: MoviesRepository,
 ) : PagingSource<Int, Movie>() {
 
-    override fun getRefreshKey(state: PagingState<Int, Movie>): Int {
-        return DEFAULT_PAGE
+    override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
+        return null
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
