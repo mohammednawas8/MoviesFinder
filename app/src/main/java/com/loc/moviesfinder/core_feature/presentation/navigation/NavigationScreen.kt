@@ -15,6 +15,8 @@ import androidx.navigation.navArgument
 import com.loc.moviesfinder.core_feature.presentation.details_screen.DetailsScreen
 import com.loc.moviesfinder.core_feature.presentation.home_screen.HomeScreen
 import com.loc.moviesfinder.core_feature.presentation.home_screen.HomeViewModel
+import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageType
+import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageViewerScreen
 import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchScreen
 import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchViewModel
 import com.loc.moviesfinder.core_feature.presentation.watch_list_screen.WatchListScreen
@@ -49,10 +51,17 @@ fun NavigationScreen(
     LaunchedEffect(key1 = true) {
         navigationViewModel.movieNavigation.collect {
             it?.let { movieId ->
-                navController.navigate(Navigation.MovieDetailsScreen.root + "/$movieId"){
+                navController.navigate(Navigation.MovieDetailsScreen.root + "/$movieId") {
                     restoreState = true
                 }
             }
+        }
+    }
+
+    //Navigate to ImageViewer screen
+    LaunchedEffect(key1 = true) {
+        navigationViewModel.imageViewerNavigation.collect {
+            navController.navigate(Navigation.ImageViewerScreen.root + "/${it.path}/${it.type}")
         }
     }
 
@@ -98,11 +107,15 @@ fun NavigationScreen(
                 }
 
                 composable(Navigation.SearchScreen.root) {
-                    SearchScreen(navController = navController, searchViewModel)
+                    SearchScreen(navController = navController,
+                        searchViewModel,
+                        onClick = { navigationViewModel.navigateToMovie(it.id) })
                 }
 
                 composable(Navigation.WatchListScreen.root) {
-                    WatchListScreen(navController = navController, watchListViewModel)
+                    WatchListScreen(navController = navController,
+                        watchListViewModel,
+                        onClick = { navigationViewModel.navigateToMovie(it.id) })
                 }
 
                 composable(Navigation.MovieDetailsScreen.root + "/{movieId}",
@@ -114,8 +127,23 @@ fun NavigationScreen(
                 ) {
                     val movieId = it.arguments?.getString("movieId")?.toInt()
                     movieId?.let {
-                        DetailsScreen(movieId = it, navController = navController)
+                        DetailsScreen(movieId = it,
+                            navController = navController,
+                            onImageClick = { image, type ->
+                                navigationViewModel.navigateToImageViewer(image, type)
+                            })
                     }
+                }
+
+                composable(Navigation.ImageViewerScreen.root + "/{imagePath}/{type}") {
+                    val imagePath = it.arguments?.getString("imagePath") ?: ""
+                    val type = it.arguments?.getString("type").let {
+                        if (it == "Poster")
+                            ImageType.POSTER
+                        else
+                            ImageType.BACKDROP
+                    }
+                    ImageViewerScreen(imagePath = imagePath, type = type)
                 }
             }
         }

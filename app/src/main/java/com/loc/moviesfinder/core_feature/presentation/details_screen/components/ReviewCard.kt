@@ -2,6 +2,7 @@ package com.loc.moviesfinder.core_feature.presentation.details_screen.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,11 +44,13 @@ fun ReviewCard(
             Column {
                 Text(text = review.author,
                     style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp,color = Color.White))
-                Text(text = review.content,
-                    style = MaterialTheme.typography.h5.copy(fontSize = 12.sp,color = Color.White),
-                    maxLines = 7,
-                    overflow = TextOverflow.Ellipsis)
+                        fontSize = 12.sp, color = Color.White))
+                    Text(text = review.content,
+                        style = MaterialTheme.typography.h5.copy(fontSize = 12.sp,
+                            color = Color.White),
+                        maxLines = 7,
+                        overflow = TextOverflow.Ellipsis)
+
             }
         }
     }

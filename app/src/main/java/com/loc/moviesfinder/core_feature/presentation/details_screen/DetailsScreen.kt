@@ -1,13 +1,12 @@
 package com.loc.moviesfinder.core_feature.presentation.details_screen
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -35,17 +34,18 @@ import com.loc.moviesfinder.core_feature.domain.model.Review
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.CastCard
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.ReviewCard
 import com.loc.moviesfinder.core_feature.presentation.details_screen.components.VerticalLine
+import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageType
 import com.loc.moviesfinder.core_feature.presentation.util.components.*
 import com.loc.moviesfinder.ui.theme.Black800
 import com.loc.moviesfinder.ui.theme.Gray500
 import com.loc.moviesfinder.ui.theme.Orange
-import kotlinx.coroutines.launch
 
 @Composable
 fun DetailsScreen(
     movieId: Int,
     viewModel: DetailsViewModel = hiltViewModel(),
     navController: NavController,
+    onImageClick: (String?, ImageType) -> Unit,
 ) {
     val reviews = viewModel.reviewsPaginator.collectAsLazyPagingItems()
     val state = viewModel.movieDetails.collectAsState().value
@@ -74,16 +74,19 @@ fun DetailsScreen(
 
         if (state.detailsLoading) {
             LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth().height(2.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         if (state.movieDetails == null) {
-
+            //Impossible
         } else {
             val movieDetailsTabs = rememberMovieDetailsTabs()
-            BackdropPosterTitleSection(state.movieDetails)
+            BackdropPosterTitleSection(state.movieDetails, onImageClick = onImageClick)
             Spacer(modifier = Modifier.height(16.dp))
             MovieInformationSection(state.movieDetails)
             Spacer(modifier = Modifier.height(24.dp))
@@ -197,7 +200,10 @@ private fun MovieInformationSection(movieDetails: MovieDetails) {
 }
 
 @Composable
-private fun BackdropPosterTitleSection(movieDetails: MovieDetails) {
+private fun BackdropPosterTitleSection(
+    movieDetails: MovieDetails,
+    onImageClick: (String?, ImageType) -> Unit,
+) {
     Box(modifier = Modifier
         .height(271.dp)
         .fillMaxWidth()) {
@@ -205,7 +211,9 @@ private fun BackdropPosterTitleSection(movieDetails: MovieDetails) {
         //For backdrop image
         MovieBackDrop(averageRating = movieDetails.averageVoting,
             backdropPath = movieDetails.backdropPath,
-            modifier = Modifier.height(210.dp))
+            modifier = Modifier
+                .height(210.dp)
+                , onImageClick = onImageClick)
 
         //For poster image and title
         Row(modifier = Modifier
@@ -216,8 +224,9 @@ private fun BackdropPosterTitleSection(movieDetails: MovieDetails) {
             MovieImageCard(imageUrl = movieDetails.posterPath,
                 modifier = Modifier
                     .height(140.dp)
-                    .width(95.dp),
-                shape = RoundedCornerShape(16.dp)
+                    .width(95.dp)
+                    .clickable { onImageClick(movieDetails.posterPath, ImageType.POSTER) },
+                shape = RoundedCornerShape(16.dp),
             )
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -236,13 +245,15 @@ fun MovieBackDrop(
     modifier: Modifier = Modifier,
     averageRating: Double,
     backdropPath: String?,
+    onImageClick: (String?,ImageType) -> Unit,
 ) {
     Box(modifier = modifier.clip(RoundedCornerShape(bottomEnd = 16.dp,
         bottomStart = 16.dp))) {
         MovieImageCard(imageUrl = backdropPath ?: "",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(210.dp),
+                .height(210.dp)
+                .clickable { onImageClick(backdropPath,ImageType.BACKDROP) },
             shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
         )
         MovieRating(rating = averageRating,

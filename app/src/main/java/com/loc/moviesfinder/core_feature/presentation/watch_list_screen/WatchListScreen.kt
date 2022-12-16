@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loc.moviesfinder.R
+import com.loc.moviesfinder.core_feature.domain.model.Movie
+import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsShimmerCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.NoResultBox
@@ -22,6 +24,7 @@ import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenTool
 fun WatchListScreen(
     navController: NavController,
     viewModel: WatchListViewModel = hiltViewModel(),
+    onClick:(MovieDetails) -> Unit
 ) {
 
     val state = viewModel.state.collectAsState().value
@@ -58,6 +61,7 @@ fun WatchListScreen(
 
                 itemsIndexed(state.moviesList) { index, item ->
                     MovieDetailsCard(movie = item) {
+                        onClick(it)
                     }
                 }
             }

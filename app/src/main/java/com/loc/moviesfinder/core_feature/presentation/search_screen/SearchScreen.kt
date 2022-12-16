@@ -17,6 +17,8 @@ import androidx.navigation.NavController
 import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenToolBar
 import com.loc.moviesfinder.R
+import com.loc.moviesfinder.core_feature.domain.model.Movie
+import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsShimmerCard
 import com.loc.moviesfinder.ui.theme.Gray600
@@ -25,6 +27,7 @@ import com.loc.moviesfinder.ui.theme.Gray600
 fun SearchScreen(
     navController: NavController,
     viewModel: SearchViewModel = hiltViewModel(),
+    onClick:(MovieDetails) -> Unit
 ) {
     val state = viewModel.searchState.collectAsState()
     var showSearchDialog by remember {
@@ -80,6 +83,7 @@ fun SearchScreen(
                     viewModel.loadNextMovies()
                 }
                 MovieDetailsCard(movie = item) {
+                    onClick(it)
                 }
             }
 

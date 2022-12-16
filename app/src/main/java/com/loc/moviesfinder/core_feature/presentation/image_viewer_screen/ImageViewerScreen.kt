@@ -175,7 +175,7 @@ fun ImageViewerScreen(
                 .align(Center),
             model = imageRequest,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillBounds,
         )
     }
 }
