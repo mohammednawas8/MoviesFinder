@@ -39,6 +39,7 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToSearch: () -> Unit,
+    navigateToMovie: (Movie) -> Unit
 ) {
 
 
@@ -78,7 +79,9 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TrendingMoviesSection(trendingMovies)
+            TrendingMoviesSection(trendingMovies){
+                navigateToMovie(it)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -106,13 +109,14 @@ fun HomeScreen(
                 .height(146.dp)
                 .padding(horizontal = 11.dp)
             ) {
+                navigateToMovie(it)
             }
         }
     }
 }
 
 @Composable
-private fun TrendingMoviesSection(trendingMovies: LazyPagingItems<Movie>) {
+private fun TrendingMoviesSection(trendingMovies: LazyPagingItems<Movie>,onClick:(Movie) -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(250.dp)
@@ -129,7 +133,7 @@ private fun TrendingMoviesSection(trendingMovies: LazyPagingItems<Movie>) {
                         number = i + 1,
                         movieItem = movie
                     ) {
-
+                    onClick(it)
                     }
 
                 }
@@ -234,6 +238,6 @@ fun HeaderTextPreview() {
 @Composable
 fun HomeScreenPreview() {
     MoviesFinderTheme {
-        HomeScreen(navController = rememberNavController(), hiltViewModel()) {}
+        HomeScreen(navController = rememberNavController(), hiltViewModel(), navigateToSearch = {}) {}
     }
 }

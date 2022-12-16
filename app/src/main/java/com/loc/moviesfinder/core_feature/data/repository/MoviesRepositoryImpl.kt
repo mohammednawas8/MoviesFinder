@@ -14,6 +14,8 @@ import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.flow.toSet
 import retrofit2.Response
 
 private val TAG = "MoviesRepositoryImpl"
@@ -183,7 +185,7 @@ class MoviesRepositoryImpl(
 
     override fun getSavedMovies(): Flow<List<MovieDetails>> {
         return moviesDao.getMovies().map {
-            it.map { it.toMovieDetails() }
+            it.map { it.toMovieDetails() }.reversed()
         }
     }
 }

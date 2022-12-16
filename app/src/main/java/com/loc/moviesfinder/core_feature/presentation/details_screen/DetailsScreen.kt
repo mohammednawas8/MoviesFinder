@@ -54,8 +54,7 @@ fun DetailsScreen(
     val castScrollState = rememberLazyGridState()
 
     LaunchedEffect(key1 = true) {
-        viewModel.getMovie(557)
-//        TODO: call viewModel function to get the movie detail
+        viewModel.getMovie(movieId)
     }
 
     Column {

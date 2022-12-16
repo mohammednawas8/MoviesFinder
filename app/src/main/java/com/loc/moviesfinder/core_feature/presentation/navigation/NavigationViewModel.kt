@@ -1,28 +1,41 @@
 package com.loc.moviesfinder.core_feature.presentation.navigation
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class NavigationViewModel : ViewModel() {
     private val _bottomNavigationState = mutableStateOf(BottomNavigationState())
-    val bottomNavigationState: MutableState<BottomNavigationState> = _bottomNavigationState
+    val bottomNavigationState: State<BottomNavigationState> = _bottomNavigationState
 
-    private val _navigation = MutableSharedFlow<String>()
-    val navigation = _navigation.asSharedFlow()
+    private val _movieNavigation = MutableSharedFlow<Int?>()
+    val movieNavigation = _movieNavigation.asSharedFlow()
 
-    fun navigate(selectedTab: Navigation) {
+    private val _bottomNavigation = MutableSharedFlow<String>()
+    val bottomNavigation = _bottomNavigation.asSharedFlow()
+
+    fun navigateToBottomNavigationScreen(selectedTab: Navigation) {
         _bottomNavigationState.value = BottomNavigationState(selectedTab = selectedTab)
         viewModelScope.launch {
-            _navigation.emit(selectedTab.root)
+            _bottomNavigation.emit(selectedTab.root)
         }
     }
 
-    fun changeSelectedItem(selectedTab: Navigation){
+    fun navigateToMovie(id: Int) {
+        viewModelScope.launch {
+            _movieNavigation.emit(id)
+        }
+        _bottomNavigationState.value = bottomNavigationState.value.copy(showBottomNavigation = false)
+    }
+
+    fun changeSelectedItem(selectedTab: Navigation) {
         _bottomNavigationState.value = BottomNavigationState(selectedTab = selectedTab)
     }
 }

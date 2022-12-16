@@ -1,26 +1,24 @@
 package com.loc.moviesfinder.core_feature.presentation.navigation
 
-import android.util.Log
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.loc.moviesfinder.core_feature.presentation.details_screen.DetailsScreen
 import com.loc.moviesfinder.core_feature.presentation.home_screen.HomeScreen
 import com.loc.moviesfinder.core_feature.presentation.home_screen.HomeViewModel
 import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchScreen
 import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchViewModel
 import com.loc.moviesfinder.core_feature.presentation.watch_list_screen.WatchListScreen
 import com.loc.moviesfinder.core_feature.presentation.watch_list_screen.WatchListViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun NavigationScreen(
@@ -34,8 +32,9 @@ fun NavigationScreen(
 
     val state = navigationViewModel.bottomNavigationState.value
 
+    //navigate to BottomNavigation screens
     LaunchedEffect(key1 = true) {
-        navigationViewModel.navigation.collect {
+        navigationViewModel.bottomNavigation.collect {
             navController.navigate(it) {
                 popUpTo(navController.graph.startDestinationId) {
                     saveState = true
@@ -45,6 +44,18 @@ fun NavigationScreen(
             }
         }
     }
+
+    //navigate to MovieDetails screen
+    LaunchedEffect(key1 = true) {
+        navigationViewModel.movieNavigation.collect {
+            it?.let { movieId ->
+                navController.navigate(Navigation.MovieDetailsScreen.root + "/$movieId"){
+                    restoreState = true
+                }
+            }
+        }
+    }
+
 
     val stackState = navController.currentBackStackEntryAsState().value
     if (stackState != null) {
@@ -58,17 +69,18 @@ fun NavigationScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            MoviesBottomNavigation(onHomeClick = {
-                navigationViewModel.navigate(Navigation.HomeScreen)
-            },
-                onSearchClick = {
-                    navigationViewModel.navigate(Navigation.SearchScreen)
+            if (state.showBottomNavigation)
+                MoviesBottomNavigation(onHomeClick = {
+                    navigationViewModel.navigateToBottomNavigationScreen(Navigation.HomeScreen)
                 },
-                onWatchListClick = {
-                    navigationViewModel.navigate(Navigation.WatchListScreen)
+                    onSearchClick = {
+                        navigationViewModel.navigateToBottomNavigationScreen(Navigation.SearchScreen)
+                    },
+                    onWatchListClick = {
+                        navigationViewModel.navigateToBottomNavigationScreen(Navigation.WatchListScreen)
 
-                }, selectedItem = state.selectedTab
-            )
+                    }, selectedItem = state.selectedTab
+                )
         }, content = { paddingValues ->
             val bottomPadding = paddingValues.calculateBottomPadding()
             NavHost(navController = navController,
@@ -78,7 +90,11 @@ fun NavigationScreen(
                 composable(Navigation.HomeScreen.root) {
                     HomeScreen(navController = navController,
                         homeViewModel,
-                        navigateToSearch = { navigationViewModel.navigate(Navigation.SearchScreen) })
+                        navigateToSearch = {
+                            navigationViewModel.navigateToBottomNavigationScreen(Navigation.SearchScreen)
+                        },
+                        navigateToMovie = { navigationViewModel.navigateToMovie(it.id) }
+                    )
                 }
 
                 composable(Navigation.SearchScreen.root) {
@@ -87,6 +103,19 @@ fun NavigationScreen(
 
                 composable(Navigation.WatchListScreen.root) {
                     WatchListScreen(navController = navController, watchListViewModel)
+                }
+
+                composable(Navigation.MovieDetailsScreen.root + "/{movieId}",
+                    arguments = listOf(
+                        navArgument(name = "movieId") {
+                            type = NavType.StringType
+                            nullable = false
+                        })
+                ) {
+                    val movieId = it.arguments?.getString("movieId")?.toInt()
+                    movieId?.let {
+                        DetailsScreen(movieId = it, navController = navController)
+                    }
                 }
             }
         }
