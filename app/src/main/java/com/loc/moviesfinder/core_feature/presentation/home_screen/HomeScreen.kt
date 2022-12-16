@@ -1,6 +1,5 @@
 package com.loc.moviesfinder.core_feature.presentation.home_screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -28,8 +27,6 @@ import com.loc.moviesfinder.core_feature.domain.model.Movie
 import androidx.paging.CombinedLoadStates
 import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
 import com.loc.moviesfinder.core_feature.presentation.home_screen.components.*
-import com.loc.moviesfinder.core_feature.presentation.navigation.Navigation
-import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.MoviesTabLayout
 import com.loc.moviesfinder.core_feature.presentation.util.components.UnEditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.gridItems
@@ -41,26 +38,18 @@ import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
+    navigateToSearch: () -> Unit,
 ) {
 
 
     val trendingMovies = viewModel.trendingMovies.collectAsLazyPagingItems()
     val tabLayoutSectionState = viewModel.tabLayoutMoviesState.collectAsState().value
 
-    var selectedTab by remember {
-        mutableStateOf(MoviesGenre.NOW_PLAYING)
-    }
+    val selectedTab = tabLayoutSectionState.selectedTab
 
-    val tabLayoutMovies = derivedStateOf {
-        when (selectedTab) {
-            MoviesGenre.NOW_PLAYING -> tabLayoutSectionState.nowPlayingMovies
-            MoviesGenre.POPULAR -> tabLayoutSectionState.popularMovies
-            MoviesGenre.LATEST -> tabLayoutSectionState.latestMovies
-            MoviesGenre.UPCOMING -> tabLayoutSectionState.upcomingMovies
-            MoviesGenre.TOP_RATED -> tabLayoutSectionState.topRatedMovies
-            else -> emptyList()
-        }
-    }.value
+    val tabLayoutMovies = tabLayoutSectionState.tabLayoutMovies
+
+    val selectedTabIndex = tabLayoutSectionState.selectedIndex
 
     val moviesCategories = rememberMoviesCategories()
     val lazyState = rememberLazyListState()
@@ -84,6 +73,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .height(42.dp),
                 onClick = {
+                    navigateToSearch()
                 })
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -92,8 +82,8 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            MoviesTabLayout(moviesCategories) {
-                selectedTab = it.tab
+            MoviesTabLayout(moviesCategories, selectedTabIndex) {
+                viewModel.changeMoviesTab(it.tab)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -108,7 +98,6 @@ fun HomeScreen(
             verticalSpace = 18.dp,
             horizontalArrangement = Arrangement.SpaceAround,
             lastItemReached = {
-                Log.d("test", "paging request")
                 viewModel.loadNowPlayingMovies()
             }
         ) { movie ->
@@ -245,6 +234,6 @@ fun HeaderTextPreview() {
 @Composable
 fun HomeScreenPreview() {
     MoviesFinderTheme {
-        HomeScreen(navController = rememberNavController(), hiltViewModel())
+        HomeScreen(navController = rememberNavController(), hiltViewModel()) {}
     }
 }

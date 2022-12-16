@@ -14,11 +14,11 @@ import com.loc.moviesfinder.core_feature.presentation.home_screen.MoviesTab
 @Composable
 fun MoviesTabLayout(
     tabs: List<MoviesTab>,
+    selectedIndex: Int,
     onTabSelect: (MoviesTab) -> Unit,
-) {
-    var selectedIndex by remember {
-        mutableStateOf(0)
-    }
+
+    ) {
+
 
     ScrollableTabRow(
         selectedTabIndex = selectedIndex,
@@ -42,7 +42,6 @@ fun MoviesTabLayout(
             Tab(
                 selected = selectedIndex == index,
                 onClick = {
-                    selectedIndex = index
                     onTabSelect(tabs[index])
                 },
                 modifier = Modifier

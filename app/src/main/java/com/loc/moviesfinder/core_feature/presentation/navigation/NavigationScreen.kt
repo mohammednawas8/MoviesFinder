@@ -47,8 +47,8 @@ fun NavigationScreen(
     }
 
     val stackState = navController.currentBackStackEntryAsState().value
-    if (stackState != null){
-        when(stackState.destination.route){
+    if (stackState != null) {
+        when (stackState.destination.route) {
             Navigation.HomeScreen.root -> navigationViewModel.changeSelectedItem(Navigation.HomeScreen)
             Navigation.SearchScreen.root -> navigationViewModel.changeSelectedItem(Navigation.SearchScreen)
             Navigation.WatchListScreen.root -> navigationViewModel.changeSelectedItem(Navigation.WatchListScreen)
@@ -69,15 +69,16 @@ fun NavigationScreen(
 
                 }, selectedItem = state.selectedTab
             )
-        }
-        , content = { paddingValues ->
+        }, content = { paddingValues ->
             val bottomPadding = paddingValues.calculateBottomPadding()
             NavHost(navController = navController,
                 startDestination = Navigation.HomeScreen.root,
                 modifier = Modifier.padding(bottom = bottomPadding)) {
 
                 composable(Navigation.HomeScreen.root) {
-                    HomeScreen(navController = navController, homeViewModel)
+                    HomeScreen(navController = navController,
+                        homeViewModel,
+                        navigateToSearch = { navigationViewModel.navigate(Navigation.SearchScreen) })
                 }
 
                 composable(Navigation.SearchScreen.root) {
