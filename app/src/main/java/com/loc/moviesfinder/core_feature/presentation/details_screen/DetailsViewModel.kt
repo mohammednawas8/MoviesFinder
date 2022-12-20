@@ -9,6 +9,7 @@ import com.loc.moviesfinder.core_feature.data.mapper.correctImagePath
 import com.loc.moviesfinder.core_feature.data.remote.paging.ReviewsPagingSource
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
 import com.loc.moviesfinder.core_feature.domain.util.Resource
+import com.loc.moviesfinder.core_feature.presentation.util.toSingleLine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,8 +55,15 @@ class DetailsViewModel @Inject constructor(
             val movieDetailsFromNetwork = moviesRepository.getMovieDetailsFromNetwork(movieId)
             when (movieDetailsFromNetwork) {
                 is Resource.Success -> {
+                    val genres = movieDetailsFromNetwork.data?.genre ?: emptyList()
+                    val genreString = if (genres.isEmpty())
+                        ""
+                    else
+                        genres[0]
+
                     _movieDetails.value = movieDetails.value.copy(detailsLoading = false,
                         movieDetails = movieDetailsFromNetwork.data!!.correctImagePath(),
+                        genreString = genreString,
                         error = null)
                 }
                 is Resource.Error -> {

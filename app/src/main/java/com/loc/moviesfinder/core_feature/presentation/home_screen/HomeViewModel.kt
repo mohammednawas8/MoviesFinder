@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(
     private val nowPlayingPaginator = DefaultPaginator(
         initialKey = 1,
         onLoadingUpdate = {
-            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+//            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
         },
         onRequest = {
             moviesRepository.getMoviesList(MoviesGenre.NOW_PLAYING, it)
@@ -67,6 +67,32 @@ class HomeViewModel @Inject constructor(
         }
     )
 
+    private val upcomingPaginator = DefaultPaginator(
+        initialKey = 1,
+        onLoadingUpdate = {
+//            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+        },
+        onRequest = {
+            moviesRepository.getMoviesList(MoviesGenre.UPCOMING, it)
+        },
+        getNextKey = {
+            it + 1
+        },
+        onSuccess = { key, items ->
+            val newMovies = items.map { it.copy(coverPath = IMAGES_BASE_PATH + it.coverPath) }
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                upcomingMovies = tabLayoutMoviesState.value.nowPlayingMovies + newMovies
+            )
+            updateTabLayoutMovies()
+        },
+        onError = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                error = it?.message ?: ""
+            )
+            Log.e(TAG, "Upcoming Movies ${it?.message}")
+        }
+    )
+
     init {
         loadNowPlayingMovies()
     }
@@ -75,44 +101,62 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             nowPlayingPaginator.loadNextData()
         }
+    }
 
+    private fun loadUpcomingMovies() {
+        viewModelScope.launch {
+            nowPlayingPaginator.loadNextData()
+        }
     }
 
     private fun updateTabLayoutMovies() {
         viewModelScope.launch {
-                val genreTab = _tabLayoutMoviesState.value.selectedTab
-                when (genreTab) {
-                    MoviesGenre.NOW_PLAYING -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = tabLayoutMoviesState.value.nowPlayingMovies))
+            val genreTab = _tabLayoutMoviesState.value.selectedTab
+            when (genreTab) {
+                MoviesGenre.NOW_PLAYING -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(
+                    tabLayoutMovies = tabLayoutMoviesState.value.nowPlayingMovies))
 
-                    MoviesGenre.POPULAR -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = tabLayoutMoviesState.value.popularMovies))
+                MoviesGenre.POPULAR -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(
+                    tabLayoutMovies = tabLayoutMoviesState.value.popularMovies))
 
-                    MoviesGenre.LATEST -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = tabLayoutMoviesState.value.latestMovies))
+                MoviesGenre.LATEST -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(
+                    tabLayoutMovies = tabLayoutMoviesState.value.latestMovies))
 
-                    MoviesGenre.UPCOMING -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = tabLayoutMoviesState.value.upcomingMovies))
-
-                    MoviesGenre.TOP_RATED -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = tabLayoutMoviesState.value.topRatedMovies))
-                    else -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = emptyList()))
+                MoviesGenre.UPCOMING -> {
+                    Log.d(TAG,"Load upcoming")
+                    _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(
+                        tabLayoutMovies = tabLayoutMoviesState.value.upcomingMovies))
+                    loadUpcomingMovies()
                 }
+
+                MoviesGenre.TOP_RATED,
+                -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = tabLayoutMoviesState.value.topRatedMovies))
+                else -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = emptyList()))
             }
+        }
     }
 
     fun changeMoviesTab(genreTab: MoviesGenre) {
         when (genreTab) {
             MoviesGenre.NOW_PLAYING ->
                 _tabLayoutMoviesState.value =
-                    tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.NOW_PLAYING, selectedIndex = 0)
+                    tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.NOW_PLAYING,
+                        selectedIndex = 0)
 
             MoviesGenre.POPULAR -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.POPULAR, selectedIndex = 3)
+                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.POPULAR,
+                    selectedIndex = 3)
 
             MoviesGenre.LATEST -> _tabLayoutMoviesState.value =
                 tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.LATEST, selectedIndex = 4)
 
             MoviesGenre.UPCOMING -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.UPCOMING, selectedIndex = 1)
+                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.UPCOMING,
+                    selectedIndex = 1)
 
             MoviesGenre.TOP_RATED -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.TOP_RATED, selectedIndex = 2)
+                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.TOP_RATED,
+                    selectedIndex = 2)
 
             else -> _tabLayoutMoviesState.value =
                 tabLayoutMoviesState.value.copy(tabLayoutMovies = emptyList())

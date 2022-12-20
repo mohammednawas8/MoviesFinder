@@ -9,4 +9,5 @@ data class SearchState(
     val pagingLoading: Boolean = false,
     val searchQuery: String = "",
     val error: String? = null,
+    val isEmpty: Boolean = false
 )

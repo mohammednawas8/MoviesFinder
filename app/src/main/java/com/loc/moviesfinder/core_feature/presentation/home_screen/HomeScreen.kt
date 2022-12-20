@@ -36,17 +36,14 @@ import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToSearch: () -> Unit,
-    navigateToMovie: (Movie) -> Unit
+    navigateToMovie: (Movie) -> Unit,
 ) {
 
 
     val trendingMovies = viewModel.trendingMovies.collectAsLazyPagingItems()
     val tabLayoutSectionState = viewModel.tabLayoutMoviesState.collectAsState().value
-
-    val selectedTab = tabLayoutSectionState.selectedTab
 
     val tabLayoutMovies = tabLayoutSectionState.tabLayoutMovies
 
@@ -79,7 +76,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TrendingMoviesSection(trendingMovies){
+            TrendingMoviesSection(trendingMovies) {
                 navigateToMovie(it)
             }
 
@@ -116,7 +113,10 @@ fun HomeScreen(
 }
 
 @Composable
-private fun TrendingMoviesSection(trendingMovies: LazyPagingItems<Movie>,onClick:(Movie) -> Unit) {
+private fun TrendingMoviesSection(
+    trendingMovies: LazyPagingItems<Movie>,
+    onClick: (Movie) -> Unit,
+) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(250.dp)
@@ -133,7 +133,7 @@ private fun TrendingMoviesSection(trendingMovies: LazyPagingItems<Movie>,onClick
                         number = i + 1,
                         movieItem = movie
                     ) {
-                    onClick(it)
+                        onClick(it)
                     }
 
                 }
@@ -238,6 +238,7 @@ fun HeaderTextPreview() {
 @Composable
 fun HomeScreenPreview() {
     MoviesFinderTheme {
-        HomeScreen(navController = rememberNavController(), hiltViewModel(), navigateToSearch = {}) {}
+        HomeScreen(
+            navigateToSearch = {}) {}
     }
 }

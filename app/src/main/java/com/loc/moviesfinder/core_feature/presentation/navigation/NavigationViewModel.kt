@@ -46,12 +46,12 @@ class NavigationViewModel : ViewModel() {
     }
 
     fun navigateToImageViewer(imagePath: String?, type: ImageType) {
-        val imageExtension = imagePath?.removePrefix("https://image.tmdb.org/t/p/w500//") ?: ""
-        Log.d("test", imageExtension)
-
-        viewModelScope.launch {
-            _imageViewerNavigation.emit(ImageViewerNavigation(imageExtension,
-                if (type == ImageType.POSTER) "Poster" else "Backdrop"))
+        val imageExtension = imagePath?.removePrefix("https://image.tmdb.org/t/p/w500//")
+        if (imageExtension != imagePath && imageExtension != null) {
+            viewModelScope.launch {
+                _imageViewerNavigation.emit(ImageViewerNavigation(imageExtension,
+                    if (type == ImageType.POSTER) "Poster" else "Backdrop"))
+            }
         }
     }
 }

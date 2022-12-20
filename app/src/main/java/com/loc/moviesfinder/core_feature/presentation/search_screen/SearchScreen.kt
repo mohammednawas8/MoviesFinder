@@ -1,5 +1,6 @@
 package com.loc.moviesfinder.core_feature.presentation.search_screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -14,25 +15,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.loc.moviesfinder.core_feature.presentation.util.components.EditableSearchbar
-import com.loc.moviesfinder.core_feature.presentation.util.components.ScreenToolBar
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
-import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsCard
-import com.loc.moviesfinder.core_feature.presentation.util.components.MovieDetailsShimmerCard
+import com.loc.moviesfinder.core_feature.presentation.util.components.*
 import com.loc.moviesfinder.ui.theme.Gray600
 
 @Composable
 fun SearchScreen(
-    navController: NavController,
     viewModel: SearchViewModel = hiltViewModel(),
-    onClick:(MovieDetails) -> Unit
+    navigateToHome:()-> Unit,
+    onClick: (MovieDetails) -> Unit,
 ) {
     val state = viewModel.searchState.collectAsState()
     var showSearchDialog by remember {
         mutableStateOf(false)
     }
+
+    if (state.value.isEmpty && !state.value.pagingLoading && !state.value.newSearchLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            NoResultBox(
+                image = painterResource(id = R.drawable.ic_no_searcb_results),
+                title = stringResource(id = R.string.no_search_results),
+                subTitle = stringResource(id = R.string.no_search_results_description),
+            )
+        }
+    }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -44,7 +54,7 @@ fun SearchScreen(
             title = stringResource(id = R.string.search),
             icon = painterResource(id = R.drawable.ic_info_circle),
             navigateBackRequest = {
-                navController.navigateUp()
+                navigateToHome()
             },
             iconClick = {
                 showSearchDialog = true

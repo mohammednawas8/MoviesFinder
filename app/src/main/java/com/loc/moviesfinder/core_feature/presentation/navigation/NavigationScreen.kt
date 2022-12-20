@@ -97,7 +97,7 @@ fun NavigationScreen(
                 modifier = Modifier.padding(bottom = bottomPadding)) {
 
                 composable(Navigation.HomeScreen.root) {
-                    HomeScreen(navController = navController,
+                    HomeScreen(
                         homeViewModel,
                         navigateToSearch = {
                             navigationViewModel.navigateToBottomNavigationScreen(Navigation.SearchScreen)
@@ -107,8 +107,8 @@ fun NavigationScreen(
                 }
 
                 composable(Navigation.SearchScreen.root) {
-                    SearchScreen(navController = navController,
-                        searchViewModel,
+                    SearchScreen(searchViewModel,
+                        navigateToHome = {navigationViewModel.navigateToBottomNavigationScreen(Navigation.HomeScreen)},
                         onClick = { navigationViewModel.navigateToMovie(it.id) })
                 }
 

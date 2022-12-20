@@ -31,4 +31,6 @@
     <string name="no_movie_title">There is no movie yet!</string>
     <string name="no_movie_description">"Find your movie by Type title, categories, years, etc "</string>
     <string name="home">Home</string>
+    <string name="no_search_results">we are sorry, we can\n Not find the movie :(</string>
+    <string name="no_search_results_description">"Find your movie by Type title,\n categories, years, etc "</string>
 </resources>

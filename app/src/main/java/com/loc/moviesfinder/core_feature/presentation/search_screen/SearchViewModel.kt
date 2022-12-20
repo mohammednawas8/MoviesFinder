@@ -31,9 +31,13 @@ class SearchViewModel @Inject constructor(
         initialKey = 1,
         onLoadingUpdate = {
             if (shouldReset)
-                _searchState.value = searchState.value.copy(newSearchLoading = it, pagingLoading = false)
+                _searchState.value =
+                    searchState.value.copy(newSearchLoading = it,
+                        pagingLoading = false)
             else
-                _searchState.value = searchState.value.copy(newSearchLoading = false, pagingLoading = it)
+                _searchState.value =
+                    searchState.value.copy(newSearchLoading = false,
+                        pagingLoading = it)
         },
         onRequest = {
             moviesRepository.searchMovies(searchState.value.searchQuery, it)
@@ -42,10 +46,12 @@ class SearchViewModel @Inject constructor(
             it + 1
         },
         onSuccess = { key, items ->
-            val searchedMovies = items.map { it.copy(posterPath = IMAGES_BASE_PATH + it.posterPath) }
+            val searchedMovies =
+                items.map { it.copy(posterPath = IMAGES_BASE_PATH + it.posterPath) }
             if (shouldReset)
                 _searchState.value =
-                    searchState.value.copy(searchedMovies = searchedMovies)
+                    searchState.value.copy(searchedMovies = searchedMovies,
+                        isEmpty = searchedMovies.isEmpty())
             else
                 _searchState.value =
                     searchState.value.copy(searchedMovies = searchState.value.searchedMovies + searchedMovies)

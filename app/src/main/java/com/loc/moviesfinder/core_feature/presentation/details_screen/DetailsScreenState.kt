@@ -7,6 +7,7 @@ data class DetailsScreenState(
     val movieDetails: MovieDetails? = null,
     val castList: List<Cast> = emptyList(),
     val aboutMovie: String = "",
+    val genreString: String = "",
     val isSaved: Boolean = false,
     val error: String? = null,
     val detailsLoading: Boolean = false,

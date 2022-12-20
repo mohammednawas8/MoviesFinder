@@ -88,7 +88,7 @@ fun DetailsScreen(
             val movieDetailsTabs = rememberMovieDetailsTabs()
             BackdropPosterTitleSection(state.movieDetails, onImageClick = onImageClick)
             Spacer(modifier = Modifier.height(16.dp))
-            MovieInformationSection(state.movieDetails)
+            MovieInformationSection(state.movieDetails,state.genreString)
             Spacer(modifier = Modifier.height(24.dp))
 
             var movieDetailsSection by remember {
@@ -170,7 +170,7 @@ private fun ReviewsSection(
 }
 
 @Composable
-private fun MovieInformationSection(movieDetails: MovieDetails) {
+private fun MovieInformationSection(movieDetails: MovieDetails,genreString: String) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 51.dp),
@@ -193,7 +193,7 @@ private fun MovieInformationSection(movieDetails: MovieDetails) {
         Spacer(modifier = Modifier.width(12.dp))
         TextIcon(
             painter = painterResource(id = R.drawable.ic_ticket),
-            text = movieDetails.genre[0],
+            text = genreString,
             color = Gray500
         )
     }

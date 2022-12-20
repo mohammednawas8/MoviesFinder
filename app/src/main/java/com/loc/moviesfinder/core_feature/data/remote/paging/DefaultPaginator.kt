@@ -1,5 +1,6 @@
 package com.loc.moviesfinder.core_feature.data.remote.paging
 
+import android.util.Log
 import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.paging.Paginator
 
@@ -18,15 +19,16 @@ class DefaultPaginator<Key, Item>(
 
     override suspend fun loadNextData() {
         if (isMakingRequest || endPaging) {
+            onLoadingUpdate(false)
             return
         }
+
         isMakingRequest = true
         onLoadingUpdate(true)
         val result = onRequest(currentKey)
         //End paging condition
-        if (result.data == null) {
+        if (result.data == null || result.data.size < 20) { // In each request we get 20 items, if the size is less than 20 this means that the next page will be empty
             endPaging = true
-            return
         }
         isMakingRequest = false
         if (result is Resource.Error) {
@@ -36,12 +38,13 @@ class DefaultPaginator<Key, Item>(
         }
         val items = result.data
         currentKey = getNextKey(currentKey)
-        onSuccess(currentKey, items)
+        items?.let { onSuccess(currentKey, it) }
         onLoadingUpdate(false)
     }
 
     override fun reset() {
         currentKey = initialKey
+        endPaging = false
         isMakingRequest = false
     }
 }
