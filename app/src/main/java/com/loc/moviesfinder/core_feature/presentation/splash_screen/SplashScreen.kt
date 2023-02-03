@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.loc.moviesfinder.R
@@ -20,11 +21,13 @@ import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
 
 @Composable
 fun SplashScreen(
-    navController: NavController,
+    viewModel: SplashViewModel = hiltViewModel(),
+    homeNavigation: () -> Unit,
 ) {
     var isImageVisible by remember {
         mutableStateOf(false)
     }
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         AnimatedVisibility(
             visible = isImageVisible,
@@ -40,12 +43,18 @@ fun SplashScreen(
         isImageVisible = true
     }
 
+    LaunchedEffect(key1 = true) {
+        viewModel.navigate.collect { rout ->
+            homeNavigation()
+        }
+    }
+
 }
 
 @Preview
 @Composable
 fun SplashScreenPreview() {
     MoviesFinderTheme {
-        SplashScreen(navController = rememberNavController())
+        SplashScreen(){}
     }
 }

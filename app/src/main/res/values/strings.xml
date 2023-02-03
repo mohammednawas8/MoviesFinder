@@ -12,4 +12,25 @@
     <string name="family">Family</string>
     <string name="ok">ok</string>
     <string name="search_text">Type the name,year or genre of the movie.</string>
+    <string name="detail">Detail</string>
+    <string name="movie_detail_not_found">Movie detail not found</string>
+    <string name="movie_backdrop">Movie Backdrop</string>
+    <string name="movie_rating">Movie rating</string>
+    <string name="about_movie">About Movie</string>
+    <string name="reviews">Reviews</string>
+    <string name="cast">Cast</string>
+    <string name="options">Options</string>
+    <string name="save">Save</string>
+    <string name="image_saved">Image saved successfully</string>
+    <string name="image_unsaved">Image was unsaved</string>
+    <string name="rational_title">Permission required</string>
+    <string name="rational_text">To save images we need to be able to write files into the external storage</string>
+    <string name="permission_denied_title">Permission denied</string>
+    <string name="permission_denied_text">Permission is denied you have to enable it from the app settings</string>
+    <string name="watch_list">Watch list</string>
+    <string name="no_movie_title">There is no movie yet!</string>
+    <string name="no_movie_description">"Find your movie by Type title, categories, years, etc "</string>
+    <string name="home">Home</string>
+    <string name="no_search_results">we are sorry, we can\n Not find the movie :(</string>
+    <string name="no_search_results_description">"Find your movie by Type title,\n categories, years, etc "</string>
 </resources>

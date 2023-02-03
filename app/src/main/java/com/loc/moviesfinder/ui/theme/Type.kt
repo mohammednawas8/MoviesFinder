@@ -37,7 +37,7 @@ val Typography = Typography(
     ),
     h5 = TextStyle(
         fontFamily = PoppinsFont,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         color = Gray600
     ),
@@ -45,6 +45,12 @@ val Typography = Typography(
         fontFamily = MontserratFont,
         fontSize = 12.sp,
         fontWeight = FontWeight.Medium,
+        color = Color.White
+    ),
+    h3 = TextStyle(
+        fontFamily = MontserratFont,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
         color = Color.White
     )
 

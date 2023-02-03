@@ -1,4 +1,4 @@
-package com.loc.moviesfinder.core_feature.data.util
+package com.loc.moviesfinder.core_feature.domain.util
 
 import java.lang.Exception
 

@@ -4,12 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/mo/AndroidStudioProjects/MoviesFinder/app/src/main/res/drawable/ic_arrow_left.xml" value="0.163" />
+        <entry key="..\:/Users/mo/AndroidStudioProjects/MoviesFinder/app/src/main/res/drawable/ic_calendar.xml" value="0.1005" />
         <entry key="..\:/Users/mo/AndroidStudioProjects/MoviesFinder/app/src/main/res/drawable/ic_popcorn.xml" value="0.1565" />
         <entry key="..\:/Users/mo/AndroidStudioProjects/MoviesFinder/app/src/main/res/font/asd.xml" value="0.14629629629629629" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

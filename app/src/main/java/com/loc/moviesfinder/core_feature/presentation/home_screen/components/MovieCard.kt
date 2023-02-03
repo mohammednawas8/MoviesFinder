@@ -32,7 +32,7 @@ fun MovieCard(
     val imageRequest = ImageRequest
         .Builder(context)
         .data(movieItem.coverPath)
-        .crossfade(200)
+        .crossfade(true)
         .build()
 
     Card(modifier = modifier.clickable { onClick(movieItem) },
@@ -63,7 +63,6 @@ fun MovieCard(
                 .background(MaterialTheme.colors.surface))
 
     }
-
 }
 
 @Preview

@@ -1,25 +1,28 @@
 package com.loc.moviesfinder.core_feature.data.repository
 
 import android.util.Log
-import com.loc.moviesfinder.core_feature.data.mapper.toMovie
-import com.loc.moviesfinder.core_feature.data.mapper.toMovieDetails
+import com.loc.moviesfinder.core_feature.data.local.MoviesDao
+import com.loc.moviesfinder.core_feature.data.mapper.*
 import com.loc.moviesfinder.core_feature.data.remote.MoviesApi
 import com.loc.moviesfinder.core_feature.data.remote.dao.MovieDetailsResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.MoviesCollectionResponse
 import com.loc.moviesfinder.core_feature.data.remote.dao.SearchResult
-import com.loc.moviesfinder.core_feature.data.util.MoviesGenre
-import com.loc.moviesfinder.core_feature.data.util.Resource
-import com.loc.moviesfinder.core_feature.domain.model.Movie
-import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.domain.model.*
+import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
+import com.loc.moviesfinder.core_feature.domain.util.Resource
 import com.loc.moviesfinder.core_feature.domain.repository.MoviesRepository
-import com.loc.moviesfinder.core_feature.domain.model.SearchedMovie
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.flow.toSet
 import retrofit2.Response
 
 private val TAG = "MoviesRepositoryImpl"
 
 class MoviesRepositoryImpl(
     private val moviesApi: MoviesApi,
+    private val moviesDao: MoviesDao,
 ) : MoviesRepository {
 
     override suspend fun getTrendingMovies(page: Int): Response<MoviesCollectionResponse> {
@@ -77,11 +80,11 @@ class MoviesRepositoryImpl(
     override suspend fun searchMovies(
         searchQuery: String,
         page: Int,
-    ): Resource<List<SearchedMovie>> {
+    ): Resource<List<MovieDetails>> {
         val handler = CoroutineExceptionHandler { _, throwable ->
             Log.e(TAG, "Exception in searchMovies $throwable")
         }
-        val searchedMovies = mutableListOf<SearchedMovie>()
+        val searchedMovies = mutableListOf<MovieDetails>()
         var parentJob: Job
         withContext(Dispatchers.IO) {
             parentJob = launch(handler) {
@@ -93,7 +96,7 @@ class MoviesRepositoryImpl(
                         moviesIds.forEach {
                             launch {
                                 val movieDetails = getMovieDetails(it).toMovieDetails()
-                                searchedMovies.add(SearchedMovie(it.id, movieDetails))
+                                searchedMovies.add(movieDetails)
                             }
                         }
                     }.await()
@@ -126,13 +129,63 @@ class MoviesRepositoryImpl(
         return body.results
     }
 
-    override suspend fun getMovieDetails(movieId: Int): MovieDetails? {
+    override suspend fun getMovieDetailsFromNetwork(movieId: Int): Resource<MovieDetails> {
         return try {
             val response = moviesApi.getMovieDetails(movieId)
-            response.body()?.toMovieDetails()
+            if (response.body() != null)
+                Resource.Success(response.body()!!.toMovieDetails())
+            else
+                Resource.Error(Exception(getResponseError(response.code())))
         } catch (e: Exception) {
             e.printStackTrace()
-            null
+            Resource.Error(e)
+        }
+    }
+
+    override suspend fun getMovieReviews(movieId: Int, page: Int): Resource<List<Review>> {
+        return try {
+            val response = moviesApi.getMovieReviews(movieId = movieId, page = page)
+            if (response.body() != null) {
+                val reviews = response.body()!!.results.map { it.toReview() }
+                Resource.Success(reviews)
+            } else {
+                throw Exception(getResponseError(response.code()))
+            }
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
+
+    override suspend fun getMovieCast(movieId: Int): Resource<List<Cast>> {
+        return try {
+            val response = moviesApi.getMovieCast(movieId)
+            if (response.body() != null) {
+                val cast = response.body()!!.cast.map { it.toCast() }
+                Resource.Success(cast)
+            } else {
+                throw Exception(getResponseError(response.code()))
+            }
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
+
+    override suspend fun getMovieFromDatabase(id: Int): MovieDetails? {
+        val movieEntity = moviesDao.getMovieById(id)?.toMovieDetails()
+        return movieEntity
+    }
+
+    override suspend fun inertMovie(movie: MovieDetails) {
+        moviesDao.insertMovie(movie.toMovieEntity())
+    }
+
+    override suspend fun deleteMovie(id: Int) {
+        moviesDao.deleteMovieById(id)
+    }
+
+    override fun getSavedMovies(): Flow<List<MovieDetails>> {
+        return moviesDao.getMovies().map {
+            it.map { it.toMovieDetails() }.reversed()
         }
     }
 }

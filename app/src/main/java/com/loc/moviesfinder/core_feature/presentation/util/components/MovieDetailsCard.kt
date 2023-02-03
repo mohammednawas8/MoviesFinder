@@ -1,4 +1,4 @@
-package com.loc.moviesfinder.core_feature.presentation.search_screen.components
+package com.loc.moviesfinder.core_feature.presentation.util.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,21 +17,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.loc.moviesfinder.core_feature.domain.model.Movie
-import com.loc.moviesfinder.core_feature.presentation.home_screen.components.MovieCard
-import com.loc.moviesfinder.core_feature.domain.model.SearchedMovie
 import com.loc.moviesfinder.R
+import com.loc.moviesfinder.core_feature.domain.model.Movie
+import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
+import com.loc.moviesfinder.core_feature.presentation.home_screen.components.MovieCard
 import com.loc.moviesfinder.core_feature.presentation.util.toSingleLine
 import com.loc.moviesfinder.ui.theme.MoviesFinderTheme
 import com.loc.moviesfinder.ui.theme.Orange
 
 @Composable
-fun SearchedItemCard(
+fun MovieDetailsCard(
     modifier: Modifier = Modifier,
-    movie: SearchedMovie,
-    movieClick: (SearchedMovie) -> Unit,
+    movie: MovieDetails,
+    movieClick: (MovieDetails) -> Unit,
 ) {
-    val genreList = movie.movieDetails.genre
+    val genreList = movie.genre
     Row(modifier = modifier
         .fillMaxWidth()
         .height(120.dp)
@@ -40,7 +40,7 @@ fun SearchedItemCard(
         horizontalArrangement = Arrangement.spacedBy(12.dp)) {
 
         MovieCard(
-            movieItem = Movie(movie.id, movie.movieDetails.posterPath),
+            movieItem = Movie(movie.id, movie.posterPath),
             modifier = Modifier
                 .fillMaxHeight()
                 .width(95.dp)
@@ -48,7 +48,7 @@ fun SearchedItemCard(
         }
 
         Column {
-            Text(text = movie.movieDetails.title,
+            Text(text = movie.title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.h5,
@@ -58,7 +58,7 @@ fun SearchedItemCard(
             Column(modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween) {
                 SearchedCardTextRow(
-                    text = movie.movieDetails.averageVoting.toString(),
+                    text = movie.averageVoting.toString(),
                     textStyle = MaterialTheme.typography.h6,
                     textColor = Orange,
                     icon = painterResource(id = R.drawable.ic_star),
@@ -69,12 +69,12 @@ fun SearchedItemCard(
                         icon = painterResource(id = R.drawable.ic_ticket),
                         text = genreList.toSingleLine())
                 SearchedCardTextRow(
-                    text = movie.movieDetails.releaseYear.toString(),
+                    text = movie.releaseYear.toString(),
                     textStyle = MaterialTheme.typography.h6,
                     icon = painterResource(id = R.drawable.ic_calendar)
                 )
                 SearchedCardTextRow(
-                    text = "${movie.movieDetails.durationInMinutes} ${stringResource(id = R.string.minutes)}",
+                    text = "${movie.durationInMinutes} ${stringResource(id = R.string.minutes)}",
                     textStyle = MaterialTheme.typography.h6,
                     icon = painterResource(id = R.drawable.ic_clock)
                 )
