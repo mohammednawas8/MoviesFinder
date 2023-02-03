@@ -1,7 +1,6 @@
 package com.loc.moviesfinder.core_feature.presentation.home_screen
 
 import android.util.Log
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -44,7 +43,7 @@ class HomeViewModel @Inject constructor(
     private val nowPlayingPaginator = DefaultPaginator(
         initialKey = 1,
         onLoadingUpdate = {
-//            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
         },
         onRequest = {
             moviesRepository.getMoviesList(MoviesGenre.NOW_PLAYING, it)
@@ -57,20 +56,21 @@ class HomeViewModel @Inject constructor(
             _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
                 nowPlayingMovies = tabLayoutMoviesState.value.nowPlayingMovies + newMovies
             )
+            Log.d("test nowPlaying", items.toString())
             updateTabLayoutMovies()
         },
         onError = {
             _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
                 error = it?.message ?: ""
             )
-            Log.e(TAG, "PlayingNowMovies ${it?.message}")
+            Log.e(TAG, "PlayingNow Movies ${it?.message}")
         }
     )
 
     private val upcomingPaginator = DefaultPaginator(
         initialKey = 1,
         onLoadingUpdate = {
-//            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
         },
         onRequest = {
             moviesRepository.getMoviesList(MoviesGenre.UPCOMING, it)
@@ -81,7 +81,7 @@ class HomeViewModel @Inject constructor(
         onSuccess = { key, items ->
             val newMovies = items.map { it.copy(coverPath = IMAGES_BASE_PATH + it.coverPath) }
             _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
-                upcomingMovies = tabLayoutMoviesState.value.nowPlayingMovies + newMovies
+                upcomingMovies = tabLayoutMoviesState.value.upcomingMovies + newMovies
             )
             updateTabLayoutMovies()
         },
@@ -93,11 +93,89 @@ class HomeViewModel @Inject constructor(
         }
     )
 
+    private val topRatedPaginator = DefaultPaginator(
+        initialKey = 1,
+        onLoadingUpdate = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+        },
+        onRequest = {
+            moviesRepository.getMoviesList(MoviesGenre.TOP_RATED, it)
+        },
+        getNextKey = {
+            it + 1
+        },
+        onSuccess = { key, items ->
+            val newMovies = items.map { it.copy(coverPath = IMAGES_BASE_PATH + it.coverPath) }
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                topRatedMovies = tabLayoutMoviesState.value.topRatedMovies + newMovies
+            )
+            updateTabLayoutMovies()
+        },
+        onError = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                error = it?.message ?: ""
+            )
+            Log.e(TAG, "Top Rated Movies ${it?.message}")
+        }
+    )
+
+    private val popularPaginator = DefaultPaginator(
+        initialKey = 1,
+        onLoadingUpdate = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+        },
+        onRequest = {
+            moviesRepository.getMoviesList(MoviesGenre.POPULAR, it)
+        },
+        getNextKey = {
+            it + 1
+        },
+        onSuccess = { key, items ->
+            val newMovies = items.map { it.copy(coverPath = IMAGES_BASE_PATH + it.coverPath) }
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                popularMovies = tabLayoutMoviesState.value.popularMovies + newMovies
+            )
+            updateTabLayoutMovies()
+        },
+        onError = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                error = it?.message ?: ""
+            )
+            Log.e(TAG, "Popular Movies ${it?.message}")
+        }
+    )
+
+    private val latestPaginator = DefaultPaginator(
+        initialKey = 1,
+        onLoadingUpdate = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(isLoading = it)
+        },
+        onRequest = {
+            moviesRepository.getMoviesList(MoviesGenre.LATEST, it)
+        },
+        getNextKey = {
+            it + 1
+        },
+        onSuccess = { key, items ->
+            val newMovies = items.map { it.copy(coverPath = IMAGES_BASE_PATH + it.coverPath) }
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                latestMovies = tabLayoutMoviesState.value.latestMovies + newMovies
+            )
+            updateTabLayoutMovies()
+        },
+        onError = {
+            _tabLayoutMoviesState.value = tabLayoutMoviesState.value.copy(
+                error = it?.message ?: ""
+            )
+            Log.e(TAG, "Latest Movies ${it?.message}")
+        }
+    )
+
     init {
         loadNowPlayingMovies()
     }
 
-    fun loadNowPlayingMovies() {
+    private fun loadNowPlayingMovies() {
         viewModelScope.launch {
             nowPlayingPaginator.loadNextData()
         }
@@ -105,7 +183,25 @@ class HomeViewModel @Inject constructor(
 
     private fun loadUpcomingMovies() {
         viewModelScope.launch {
-            nowPlayingPaginator.loadNextData()
+            upcomingPaginator.loadNextData()
+        }
+    }
+
+    private fun loadTopRatedMovies() {
+        viewModelScope.launch {
+            topRatedPaginator.loadNextData()
+        }
+    }
+
+    private fun loadPopularMovies() {
+        viewModelScope.launch {
+            popularPaginator.loadNextData()
+        }
+    }
+
+    private fun loadLatestMovies() {
+        viewModelScope.launch {
+            latestPaginator.loadNextData()
         }
     }
 
@@ -123,10 +219,8 @@ class HomeViewModel @Inject constructor(
                     tabLayoutMovies = tabLayoutMoviesState.value.latestMovies))
 
                 MoviesGenre.UPCOMING -> {
-                    Log.d(TAG,"Load upcoming")
                     _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(
                         tabLayoutMovies = tabLayoutMoviesState.value.upcomingMovies))
-                    loadUpcomingMovies()
                 }
 
                 MoviesGenre.TOP_RATED,
@@ -136,6 +230,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private var isUpcomingCalled = false
+    private var isTopRatedCalled = false
+    private var isPopularCalled = false
+    private var isLatestCalled = false
+
     fun changeMoviesTab(genreTab: MoviesGenre) {
         when (genreTab) {
             MoviesGenre.NOW_PLAYING ->
@@ -143,24 +242,68 @@ class HomeViewModel @Inject constructor(
                     tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.NOW_PLAYING,
                         selectedIndex = 0)
 
-            MoviesGenre.POPULAR -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.POPULAR,
-                    selectedIndex = 3)
+            MoviesGenre.POPULAR -> {
+                _tabLayoutMoviesState.value =
+                    tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.POPULAR,
+                        selectedIndex = 3)
+                if (!isPopularCalled){
+                    loadPopularMovies()
+                    isPopularCalled = true
+                }
+            }
 
-            MoviesGenre.LATEST -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.LATEST, selectedIndex = 4)
+            MoviesGenre.LATEST -> {
+                _tabLayoutMoviesState.value =
+                    tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.LATEST,
+                        selectedIndex = 4)
+                if (!isLatestCalled){
+                    loadLatestMovies()
+                    isLatestCalled = true
+                }
+            }
+            MoviesGenre.UPCOMING -> {
+                _tabLayoutMoviesState.value =
+                    tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.UPCOMING,
+                        selectedIndex = 1)
+                if (!isUpcomingCalled){
+                    loadUpcomingMovies()
+                    isUpcomingCalled = true
+                }
+            }
 
-            MoviesGenre.UPCOMING -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.UPCOMING,
-                    selectedIndex = 1)
+            MoviesGenre.TOP_RATED -> {
+                _tabLayoutMoviesState.value =
+                    tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.TOP_RATED,
+                        selectedIndex = 2)
 
-            MoviesGenre.TOP_RATED -> _tabLayoutMoviesState.value =
-                tabLayoutMoviesState.value.copy(selectedTab = MoviesGenre.TOP_RATED,
-                    selectedIndex = 2)
+                if (!isTopRatedCalled){
+                    loadTopRatedMovies()
+                    isTopRatedCalled = true
+                }
+            }
 
             else -> _tabLayoutMoviesState.value =
                 tabLayoutMoviesState.value.copy(tabLayoutMovies = emptyList())
         }
         updateTabLayoutMovies()
+    }
+
+
+    fun loadNextPage() {
+        viewModelScope.launch {
+            val genreTab = _tabLayoutMoviesState.value.selectedTab
+            when (genreTab) {
+                MoviesGenre.NOW_PLAYING -> loadNowPlayingMovies()
+
+                MoviesGenre.POPULAR -> loadPopularMovies()
+
+                MoviesGenre.LATEST -> loadLatestMovies()
+
+                MoviesGenre.UPCOMING -> loadUpcomingMovies()
+
+                MoviesGenre.TOP_RATED -> loadTopRatedMovies()
+                else -> _tabLayoutMoviesState.emit(tabLayoutMoviesState.value.copy(tabLayoutMovies = emptyList()))
+            }
+        }
     }
 }

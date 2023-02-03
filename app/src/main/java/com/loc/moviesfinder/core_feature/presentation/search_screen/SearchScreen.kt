@@ -1,6 +1,5 @@
 package com.loc.moviesfinder.core_feature.presentation.search_screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -8,15 +7,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.loc.moviesfinder.R
-import com.loc.moviesfinder.core_feature.domain.model.Movie
 import com.loc.moviesfinder.core_feature.domain.model.MovieDetails
 import com.loc.moviesfinder.core_feature.presentation.util.components.*
 import com.loc.moviesfinder.ui.theme.Gray600
@@ -24,7 +22,8 @@ import com.loc.moviesfinder.ui.theme.Gray600
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navigateToHome:()-> Unit,
+    focus: Boolean,
+    navigateToHome: () -> Unit,
     onClick: (MovieDetails) -> Unit,
 ) {
     val state = viewModel.searchState.collectAsState()
@@ -44,6 +43,9 @@ fun SearchScreen(
 
 
     Column(modifier = Modifier.fillMaxSize()) {
+        val focusRequester = remember {
+            FocusRequester()
+        }
         Spacer(modifier = Modifier.height(20.dp))
 
         ScreenToolBar(
@@ -73,9 +75,13 @@ fun SearchScreen(
                 .padding(horizontal = 29.dp)
                 .fillMaxWidth()
                 .height(42.dp),
+            focusRequester = focusRequester,
         ) {
             viewModel.searchMovies(it)
         }
+
+            if (focus)
+                LaunchedEffect(key1 = true, block = { focusRequester.requestFocus() })
 
         Spacer(modifier = Modifier.height(24.dp))
 

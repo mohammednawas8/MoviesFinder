@@ -2,15 +2,19 @@ package com.loc.moviesfinder.core_feature.presentation.util.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -26,6 +30,7 @@ import com.loc.moviesfinder.R
 @Composable
 fun EditableSearchbar(
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester,
     onValueChange: ((query: String) -> Unit)? = null,
 ) {
 
@@ -44,7 +49,7 @@ fun EditableSearchbar(
             if (onValueChange != null)
                 onValueChange(it)
         },
-        modifier = modifier,
+        modifier = modifier.focusRequester(focusRequester),
         textStyle = MaterialTheme.typography.h5.copy(color = Color.White, fontSize = 14.sp),
         readOnly = false,
         cursorBrush = Brush.verticalGradient(

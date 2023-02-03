@@ -1,5 +1,6 @@
 package com.loc.moviesfinder.core_feature.presentation.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -19,6 +20,7 @@ import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageT
 import com.loc.moviesfinder.core_feature.presentation.image_viewer_screen.ImageViewerScreen
 import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchScreen
 import com.loc.moviesfinder.core_feature.presentation.search_screen.SearchViewModel
+import com.loc.moviesfinder.core_feature.presentation.splash_screen.SplashScreen
 import com.loc.moviesfinder.core_feature.presentation.watch_list_screen.WatchListScreen
 import com.loc.moviesfinder.core_feature.presentation.watch_list_screen.WatchListViewModel
 
@@ -27,12 +29,13 @@ fun NavigationScreen(
     homeViewModel: HomeViewModel,
     searchViewModel: SearchViewModel,
     watchListViewModel: WatchListViewModel,
+    navigationViewModel: NavigationViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
 
-    val navigationViewModel: NavigationViewModel = hiltViewModel()
-
     val state = navigationViewModel.bottomNavigationState.value
+
+    Log.d("test",state.showBottomNavigation.toString())
 
     //navigate to BottomNavigation screens
     LaunchedEffect(key1 = true) {
@@ -61,7 +64,18 @@ fun NavigationScreen(
     //Navigate to ImageViewer screen
     LaunchedEffect(key1 = true) {
         navigationViewModel.imageViewerNavigation.collect {
-            navController.navigate(Navigation.ImageViewerScreen.root + "/${it.path}/${it.type}")
+            navController.navigate(Navigation.ImageViewerScreen.root + "/${it.path}/${it.type}") {
+                restoreState = true
+            }
+        }
+    }
+
+    //Splash navigation to home
+    LaunchedEffect(key1 = true) {
+        navigationViewModel.splashNavigation.collect {
+            navController.navigate(it) {
+
+            }
         }
     }
 
@@ -96,6 +110,7 @@ fun NavigationScreen(
                 startDestination = Navigation.HomeScreen.root,
                 modifier = Modifier.padding(bottom = bottomPadding)) {
 
+
                 composable(Navigation.HomeScreen.root) {
                     HomeScreen(
                         homeViewModel,
@@ -106,9 +121,14 @@ fun NavigationScreen(
                     )
                 }
 
-                composable(Navigation.SearchScreen.root) {
+                composable(
+                    Navigation.SearchScreen.root,
+                ) {
                     SearchScreen(searchViewModel,
-                        navigateToHome = {navigationViewModel.navigateToBottomNavigationScreen(Navigation.HomeScreen)},
+                        focus = false,
+                        navigateToHome = {
+                            navigationViewModel.navigateToBottomNavigationScreen(Navigation.HomeScreen)
+                        },
                         onClick = { navigationViewModel.navigateToMovie(it.id) })
                 }
 

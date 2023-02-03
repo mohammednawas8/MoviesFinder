@@ -5,9 +5,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -16,17 +18,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.loc.moviesfinder.R
 import com.loc.moviesfinder.core_feature.domain.model.Movie
-import androidx.paging.CombinedLoadStates
 import com.loc.moviesfinder.core_feature.domain.util.MoviesGenre
-import com.loc.moviesfinder.core_feature.presentation.home_screen.components.*
+import com.loc.moviesfinder.core_feature.presentation.home_screen.components.MovieCard
+import com.loc.moviesfinder.core_feature.presentation.home_screen.components.RetryItem
+import com.loc.moviesfinder.core_feature.presentation.home_screen.components.TrendingMovieCard
 import com.loc.moviesfinder.core_feature.presentation.util.components.MoviesTabLayout
 import com.loc.moviesfinder.core_feature.presentation.util.components.UnEditableSearchbar
 import com.loc.moviesfinder.core_feature.presentation.util.components.gridItems
@@ -76,15 +78,22 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            TrendingMoviesSection(trendingMovies) {
+            TrendingMoviesSection(trendingMovies,viewModel) {
                 navigateToMovie(it)
             }
+
 
             Spacer(modifier = Modifier.height(24.dp))
 
             MoviesTabLayout(moviesCategories, selectedTabIndex) {
                 viewModel.changeMoviesTab(it.tab)
             }
+
+            if (tabLayoutSectionState.isLoading)
+                LinearProgressIndicator(modifier = Modifier
+                    .padding(top = 5.dp)
+                    .fillMaxWidth()
+                    .height(1.dp))
 
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -98,7 +107,7 @@ fun HomeScreen(
             verticalSpace = 18.dp,
             horizontalArrangement = Arrangement.SpaceAround,
             lastItemReached = {
-                viewModel.loadNowPlayingMovies()
+                viewModel.loadNextPage()
             }
         ) { movie ->
             MovieCard(movieItem = movie, modifier = Modifier
@@ -115,6 +124,7 @@ fun HomeScreen(
 @Composable
 private fun TrendingMoviesSection(
     trendingMovies: LazyPagingItems<Movie>,
+    viewModel: HomeViewModel,
     onClick: (Movie) -> Unit,
 ) {
     Box(modifier = Modifier
@@ -140,7 +150,7 @@ private fun TrendingMoviesSection(
             }
         }
         val loadState = trendingMovies.loadState
-        MoviesLoadState(loadState, trendingMovies)
+        MoviesLoadState(loadState, trendingMovies,viewModel)
     }
 }
 
@@ -149,6 +159,7 @@ private fun TrendingMoviesSection(
 private fun MoviesLoadState(
     loadState: CombinedLoadStates,
     moviesPagingItems: LazyPagingItems<Movie>,
+    viewModel: HomeViewModel
 ) {
     when {
         //Initial Loading
@@ -221,7 +232,6 @@ fun rememberMoviesCategories(): List<MoviesTab> {
         MoviesTab(stringResource(id = R.string.upcoming), MoviesGenre.UPCOMING),
         MoviesTab(stringResource(id = R.string.top_rated), MoviesGenre.TOP_RATED),
         MoviesTab(stringResource(id = R.string.popular), MoviesGenre.POPULAR),
-        MoviesTab(stringResource(id = R.string.latest), MoviesGenre.LATEST),
     )
 }
 

@@ -26,6 +26,22 @@ class NavigationViewModel : ViewModel() {
     private val _imageViewerNavigation = MutableSharedFlow<ImageViewerNavigation>()
     val imageViewerNavigation = _imageViewerNavigation.asSharedFlow()
 
+    private val _searchNavigation = MutableSharedFlow<String>()
+    val searchNavigation = _searchNavigation.asSharedFlow()
+
+    private val _splashNavigation = MutableSharedFlow<String>()
+    val splashNavigation = _splashNavigation.asSharedFlow()
+
+
+
+    fun navigateToSearch() {
+        _bottomNavigationState.value = BottomNavigationState(selectedTab = Navigation.SearchScreen)
+        viewModelScope.launch {
+            _searchNavigation.emit(Navigation.SearchScreen.root)
+        }
+    }
+
+
     fun navigateToBottomNavigationScreen(selectedTab: Navigation) {
         _bottomNavigationState.value = BottomNavigationState(selectedTab = selectedTab)
         viewModelScope.launch {
@@ -52,6 +68,14 @@ class NavigationViewModel : ViewModel() {
                 _imageViewerNavigation.emit(ImageViewerNavigation(imageExtension,
                     if (type == ImageType.POSTER) "Poster" else "Backdrop"))
             }
+        }
+    }
+
+    fun splashNavigation() {
+        viewModelScope.launch {
+            _splashNavigation.emit(Navigation.HomeScreen.root)
+            _bottomNavigationState.value =
+                bottomNavigationState.value.copy(showBottomNavigation = true)
         }
     }
 }

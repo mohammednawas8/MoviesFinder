@@ -191,7 +191,7 @@ private fun
         onDismissRequest = onDismissRequest,
         buttons = {
             TextButton(onClick = onDismissRequest) {
-                Text(text = stringResource(id = R.string.ok), color = Color.White)
+                Text(text = stringResource(id = R.string.ok), color = Color.Black)
             }
         },
         modifier = Modifier

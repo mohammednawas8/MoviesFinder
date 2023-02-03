@@ -54,8 +54,10 @@ fun DetailsScreen(
     val castScrollState = rememberLazyGridState()
 
     LaunchedEffect(key1 = true) {
-        viewModel.getMovie(movieId)
+            viewModel.getMovie(movieId)
     }
+
+    val moviesDetails = state.movieDetails
 
     Column {
         Spacer(modifier = Modifier.height(20.dp))
@@ -82,13 +84,13 @@ fun DetailsScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        if (state.movieDetails == null) {
+        if (moviesDetails == null) {
             //Impossible
         } else {
             val movieDetailsTabs = rememberMovieDetailsTabs()
-            BackdropPosterTitleSection(state.movieDetails, onImageClick = onImageClick)
+            BackdropPosterTitleSection(moviesDetails, onImageClick = onImageClick)
             Spacer(modifier = Modifier.height(16.dp))
-            MovieInformationSection(state.movieDetails,state.genreString)
+            MovieInformationSection(moviesDetails, state.genreString)
             Spacer(modifier = Modifier.height(24.dp))
 
             var movieDetailsSection by remember {
@@ -170,7 +172,8 @@ private fun ReviewsSection(
 }
 
 @Composable
-private fun MovieInformationSection(movieDetails: MovieDetails,genreString: String) {
+@Stable
+private fun MovieInformationSection(movieDetails: MovieDetails, genreString: String) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 51.dp),
@@ -212,8 +215,7 @@ private fun BackdropPosterTitleSection(
         MovieBackDrop(averageRating = movieDetails.averageVoting,
             backdropPath = movieDetails.backdropPath,
             modifier = Modifier
-                .height(210.dp)
-                , onImageClick = onImageClick)
+                .height(210.dp), onImageClick = onImageClick)
 
         //For poster image and title
         Row(modifier = Modifier
@@ -221,7 +223,8 @@ private fun BackdropPosterTitleSection(
             .align(Alignment.BottomStart)
             .padding(start = 29.dp, end = 29.dp), verticalAlignment = Bottom) {
 
-            MovieImageCard(imageUrl = movieDetails.posterPath,
+            MovieImageCard(
+                imageUrl = movieDetails.posterPath,
                 modifier = Modifier
                     .height(140.dp)
                     .width(95.dp)
@@ -245,7 +248,7 @@ fun MovieBackDrop(
     modifier: Modifier = Modifier,
     averageRating: Double,
     backdropPath: String?,
-    onImageClick: (String?,ImageType) -> Unit,
+    onImageClick: (String?, ImageType) -> Unit,
 ) {
     Box(modifier = modifier.clip(RoundedCornerShape(bottomEnd = 16.dp,
         bottomStart = 16.dp))) {
@@ -253,7 +256,7 @@ fun MovieBackDrop(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(210.dp)
-                .clickable { onImageClick(backdropPath,ImageType.BACKDROP) },
+                .clickable { onImageClick(backdropPath, ImageType.BACKDROP) },
             shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
         )
         MovieRating(rating = averageRating,

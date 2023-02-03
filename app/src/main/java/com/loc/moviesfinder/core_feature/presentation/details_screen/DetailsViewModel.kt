@@ -31,10 +31,12 @@ class DetailsViewModel @Inject constructor(
     var castScrollPosition = 0
 
     fun getMovie(movieId: Int) {
-        this.movieId = movieId
-        getMovieDetails(movieId)
-        getMovieCast(movieId)
-        checkIfMovieIsSaved(movieId)
+        if (movieDetails.value.movieDetails == null){ //To avoid calling these functions again when navigating back from image viewer screen
+            this.movieId = movieId
+            getMovieDetails(movieId)
+            getMovieCast(movieId)
+            checkIfMovieIsSaved(movieId)
+        }
     }
 
     private fun checkIfMovieIsSaved(movieId: Int) {
